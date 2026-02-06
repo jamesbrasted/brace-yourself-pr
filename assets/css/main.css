@@ -1,0 +1,591 @@
+/**
+ * Brace Yourself Theme - Main Stylesheet
+ *
+ * Production-grade CSS design system built on modular scale principles.
+ * Base: 17px | Ratio: 1.414 (√2) | Browser default: 16px
+ *
+ * @package Brace_Yourself
+ */
+
+/* ========================================
+   CSS RESET & BASE
+   ======================================== */
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	font-size: 100%; /* 16px browser default */
+	-webkit-text-size-adjust: 100%;
+	-ms-text-size-adjust: 100%;
+}
+
+body {
+	font-family: var(--font-sans);
+	font-size: var(--font-body);
+	line-height: var(--line-height-base);
+	color: var(--color-text);
+	background-color: var(--color-bg);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+/* ========================================
+   MODULAR SCALE VALUES
+   ========================================
+   Base: 17px | Ratio: 1.414 (√2) | Browser: 16px
+   All values calculated mathematically, no approximations.
+   */
+
+:root {
+	/* Scale Values */
+	--scale-000: 0.187967rem; /* 3.01px */
+	--scale-100: 0.265786rem; /* 4.25px */
+	--scale-200: 0.375821rem; /* 6.01px */
+	--scale-300: 0.531410rem; /* 8.50px */
+	--scale-400: 0.751414rem; /* 12.02px */
+	--scale-500: 1.062500rem; /* 17.00px - Base */
+	--scale-600: 1.502375rem; /* 24.04px */
+	--scale-700: 2.124358rem; /* 33.99px */
+	--scale-800: 3.003843rem; /* 48.06px */
+	--scale-900: 4.247433rem; /* 67.96px */
+	--scale-1000: 6.005871rem; /* 96.09px */
+
+	/* ========================================
+	   COLOR SYSTEM
+	   ======================================== */
+
+	/* Raw Color Variables (Never use directly in components) */
+	--near-black: #121212;
+	--crimson-red: #E03C28;
+	--pure-white: #FFFFFF;
+
+	/* Semantic Color Aliases (Use these in components) */
+	--color-bg: var(--near-black);
+	--color-text: var(--pure-white);
+	--color-accent: var(--crimson-red);
+
+	/* ========================================
+	   SPACING SCALE
+	   ======================================== */
+
+	--space-000: 0;
+	--space-100: var(--scale-000);  /* 0.187967rem / 3.01px */
+	--space-200: var(--scale-100);  /* 0.265786rem / 4.25px */
+	--space-300: var(--scale-200);  /* 0.375821rem / 6.01px */
+	--space-400: var(--scale-300);  /* 0.531410rem / 8.50px */
+	--space-500: var(--scale-400);  /* 0.751414rem / 12.02px */
+	--space-600: var(--scale-500);  /* 1.062500rem / 17.00px */
+	--space-700: var(--scale-600);  /* 1.502375rem / 24.04px */
+	--space-800: var(--scale-700);  /* 2.124358rem / 33.99px */
+	--space-900: var(--scale-800);  /* 3.003843rem / 48.06px */
+	--space-1000: var(--scale-900); /* 4.247433rem / 67.96px */
+	--space-1100: var(--scale-1000); /* 6.005871rem / 96.09px */
+
+	/* ========================================
+	   TYPOGRAPHY SCALE
+	   ======================================== */
+
+	--text-sm: var(--scale-400);    /* 0.751414rem / 12.02px */
+	--text-base: var(--scale-500);  /* 1.062500rem / 17.00px */
+	--text-lg: var(--scale-600);    /* 1.502375rem / 24.04px */
+	--text-xl: var(--scale-700);    /* 2.124358rem / 33.99px */
+	--text-2xl: var(--scale-800);   /* 3.003843rem / 48.06px */
+	--text-3xl: var(--scale-900);   /* 4.247433rem / 67.96px */
+	--text-4xl: var(--scale-1000);  /* 6.005871rem / 96.09px */
+
+	/* ========================================
+	   SEMANTIC TYPOGRAPHY TOKENS
+	   ======================================== */
+
+	--font-body: var(--text-base);
+	--font-caption: var(--text-sm);
+	--font-h1: var(--text-3xl);
+	--font-h2: var(--text-2xl);
+	--font-h3: var(--text-xl);
+	--font-h4: var(--text-lg);
+	--font-h5: var(--text-base);
+	--font-h6: var(--text-sm);
+
+	/* ========================================
+	   LINE HEIGHT SYSTEM
+	   ======================================== */
+
+	--line-height-tight: 1.2;
+	--line-height-base: 1.5;
+	--line-height-relaxed: 1.75;
+	--line-height-loose: 2;
+
+	/* ========================================
+	   LETTER SPACING
+	   ======================================== */
+
+	--letter-spacing-tight: -0.02em;
+	--letter-spacing-normal: 0;
+	--letter-spacing-wide: 0.02em;
+	--letter-spacing-wider: 0.05em;
+
+	/* ========================================
+	   FONT FAMILIES
+	   ======================================== */
+
+	--font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+	--font-heading: var(--font-sans);
+
+	/* ========================================
+	   BORDER RADIUS
+	   ======================================== */
+
+	--radius-sm: var(--scale-200);  /* 0.375821rem / 6.01px */
+	--radius-base: var(--scale-300); /* 0.531410rem / 8.50px */
+	--radius-lg: var(--scale-400);  /* 0.751414rem / 12.02px */
+	--radius-full: 9999px;
+
+	/* ========================================
+	   SHADOWS
+	   ======================================== */
+
+	--shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+	--shadow-base: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+	--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+	--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+	--shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+	/* ========================================
+	   MOTION SYSTEM
+	   ======================================== */
+
+	--ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+	--ease-in: cubic-bezier(0.4, 0, 1, 1);
+	--ease-out: cubic-bezier(0, 0, 0.2, 1);
+	--ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+	--duration-fast: 150ms;
+	--duration-base: 250ms;
+	--duration-slow: 400ms;
+
+	/* ========================================
+	   SEMANTIC SPACING TOKENS
+	   ======================================== */
+
+	--space-section: var(--space-1100); /* 6.005871rem / 96.09px */
+	--space-stack: var(--space-600);    /* 1.062500rem / 17.00px */
+	--space-inline: var(--space-400);   /* 0.531410rem / 8.50px */
+}
+
+/* ========================================
+   TYPOGRAPHY
+   ======================================== */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: var(--font-heading);
+	font-weight: 700;
+	line-height: var(--line-height-tight);
+	color: var(--color-text);
+	margin: 0;
+}
+
+h1 {
+	font-size: var(--font-h1);
+}
+
+h2 {
+	font-size: var(--font-h2);
+}
+
+h3 {
+	font-size: var(--font-h3);
+}
+
+h4 {
+	font-size: var(--font-h4);
+}
+
+h5 {
+	font-size: var(--font-h5);
+}
+
+h6 {
+	font-size: var(--font-h6);
+}
+
+p {
+	margin: 0;
+}
+
+a {
+	color: var(--color-accent);
+	text-decoration: none;
+	transition: color var(--duration-fast) var(--ease-standard);
+}
+
+a:hover,
+a:focus {
+	text-decoration: underline;
+}
+
+a:focus-visible {
+	outline: 2px solid var(--color-accent);
+	outline-offset: 2px;
+}
+
+/* ========================================
+   VERTICAL RHYTHM UTILITIES
+   ======================================== */
+
+/**
+ * Flow utility - adds consistent spacing between direct children
+ * Uses semantic spacing token for predictable rhythm
+ */
+.flow > * + * {
+	margin-top: var(--space-stack);
+}
+
+/**
+ * Stack utility - alias for flow
+ */
+.stack > * + * {
+	margin-top: var(--space-stack);
+}
+
+/* ========================================
+   LAYOUT UTILITIES
+   ======================================== */
+
+.container {
+	width: 100%;
+	max-width: 1200px;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: var(--space-600);
+	padding-right: var(--space-600);
+}
+
+.section {
+	padding-top: var(--space-section);
+	padding-bottom: var(--space-section);
+}
+
+/* ========================================
+   COMPONENT STYLES
+   ======================================== */
+
+/* Button Component */
+.btn {
+	display: inline-block;
+	padding: var(--space-400) var(--space-700);
+	font-size: var(--font-body);
+	font-family: var(--font-sans);
+	line-height: var(--line-height-base);
+	color: var(--color-text);
+	background-color: var(--color-accent);
+	border: none;
+	border-radius: var(--radius-base);
+	cursor: pointer;
+	transition: background-color var(--duration-base) var(--ease-standard),
+				transform var(--duration-fast) var(--ease-standard);
+	text-decoration: none;
+}
+
+.btn:hover,
+.btn:focus {
+	background-color: var(--color-accent);
+	opacity: 0.9;
+	text-decoration: none;
+}
+
+.btn:active {
+	transform: scale(0.98);
+}
+
+.btn:focus-visible {
+	outline: 2px solid var(--color-accent);
+	outline-offset: 2px;
+}
+
+/* Hero Component */
+.hero {
+	position: relative;
+	min-height: 60vh;
+	display: flex;
+	align-items: center;
+}
+
+.hero__image {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+	overflow: hidden;
+}
+
+.hero__image img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.hero__content {
+	position: relative;
+	z-index: 1;
+	max-width: 800px;
+}
+
+.hero__heading {
+	margin-bottom: var(--space-600);
+}
+
+.hero__subheading {
+	margin-bottom: var(--space-800);
+	font-size: var(--text-lg);
+	line-height: var(--line-height-relaxed);
+}
+
+.hero__cta {
+	margin-top: var(--space-800);
+}
+
+/* Site Header */
+.site-header {
+	padding: var(--space-600) 0;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.site-branding {
+	margin-bottom: var(--space-600);
+}
+
+.site-title {
+	font-size: var(--text-xl);
+	margin-bottom: var(--space-200);
+}
+
+.site-title a {
+	color: var(--color-text);
+	text-decoration: none;
+}
+
+.site-description {
+	font-size: var(--text-sm);
+	color: rgba(255, 255, 255, 0.7);
+}
+
+.main-navigation {
+	margin-top: var(--space-600);
+}
+
+.menu-toggle {
+	background: transparent;
+	border: 1px solid var(--color-text);
+	color: var(--color-text);
+	padding: var(--space-400) var(--space-600);
+	cursor: pointer;
+	font-size: var(--font-body);
+}
+
+.primary-menu {
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-400);
+}
+
+.primary-menu a {
+	color: var(--color-text);
+	text-decoration: none;
+}
+
+.primary-menu.is-open {
+	display: flex;
+}
+
+@media (min-width: 768px) {
+	.site-header .container {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.site-branding {
+		margin-bottom: 0;
+	}
+
+	.main-navigation {
+		margin-top: 0;
+	}
+
+	.menu-toggle {
+		display: none;
+	}
+
+	.primary-menu {
+		flex-direction: row;
+		gap: var(--space-700);
+	}
+}
+
+/* Site Footer */
+.site-footer {
+	padding: var(--space-section) 0;
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+	margin-top: var(--space-section);
+}
+
+.footer-menu {
+	list-style: none;
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-600);
+	margin-bottom: var(--space-800);
+}
+
+.footer-menu a {
+	color: rgba(255, 255, 255, 0.7);
+	text-decoration: none;
+}
+
+.footer-menu a:hover {
+	color: var(--color-text);
+}
+
+.site-info {
+	font-size: var(--text-sm);
+	color: rgba(255, 255, 255, 0.5);
+}
+
+/* Entry Content */
+.entry-header {
+	margin-bottom: var(--space-800);
+}
+
+.entry-title {
+	margin-bottom: var(--space-600);
+}
+
+.entry-title a {
+	color: var(--color-text);
+	text-decoration: none;
+}
+
+.entry-meta {
+	font-size: var(--text-sm);
+	color: rgba(255, 255, 255, 0.7);
+	margin-bottom: var(--space-600);
+}
+
+.entry-content {
+	margin-bottom: var(--space-800);
+}
+
+.entry-content p {
+	margin-bottom: var(--space-600);
+}
+
+.entry-content h2,
+.entry-content h3,
+.entry-content h4 {
+	margin-top: var(--space-1000);
+	margin-bottom: var(--space-600);
+}
+
+.entry-content h2:first-child,
+.entry-content h3:first-child,
+.entry-content h4:first-child {
+	margin-top: 0;
+}
+
+.entry-footer {
+	font-size: var(--text-sm);
+	color: rgba(255, 255, 255, 0.7);
+	padding-top: var(--space-800);
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.post-thumbnail {
+	margin-bottom: var(--space-800);
+}
+
+.post-thumbnail img {
+	width: 100%;
+	height: auto;
+	border-radius: var(--radius-base);
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (min-width: 768px) {
+	:root {
+		/* Adjust spacing scale for larger screens if needed */
+	}
+
+	.container {
+		padding-left: var(--space-800);
+		padding-right: var(--space-800);
+	}
+}
+
+@media (min-width: 1200px) {
+	.container {
+		padding-left: var(--space-1000);
+		padding-right: var(--space-1000);
+	}
+}
+
+/* ========================================
+   ACCESSIBILITY
+   ======================================== */
+
+/* Skip to content link */
+.skip-link {
+	position: absolute;
+	top: -40px;
+	left: 0;
+	background: var(--color-accent);
+	color: var(--color-text);
+	padding: var(--space-400);
+	text-decoration: none;
+	z-index: 100000;
+}
+
+.skip-link:focus {
+	top: 0;
+}
+
+/* Screen reader only */
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border-width: 0;
+}

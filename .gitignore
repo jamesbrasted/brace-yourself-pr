@@ -1,0 +1,33 @@
+# WordPress
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Dependencies
+node_modules/
+vendor/
+
+# Build files
+*.log
+*.cache
+
+# Environment files
+.env
+.env.local
+
+# ACF JSON (if you want to ignore it)
+# /acf-json/
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db

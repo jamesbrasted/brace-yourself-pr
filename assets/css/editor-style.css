@@ -1,0 +1,10 @@
+/**
+ * Editor Styles
+ *
+ * Styles for the WordPress block editor (Gutenberg).
+ * Minimal styles to match front-end typography.
+ *
+ * @package Brace_Yourself
+ */
+
+@import url('main.css');
