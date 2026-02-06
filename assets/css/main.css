@@ -45,6 +45,12 @@ body {
 		transition-duration: 0.01ms !important;
 		scroll-behavior: auto !important;
 	}
+	
+	/* Exception: Background carousel should still animate but slower */
+	.background-carousel__item {
+		animation-duration: var(--total-duration, 7000ms) !important;
+		animation-iteration-count: infinite !important;
+	}
 }
 
 /* ========================================
@@ -180,6 +186,7 @@ body {
 	--duration-fast: 150ms;
 	--duration-base: 250ms;
 	--duration-slow: 400ms;
+	--duration-carousel: 7000ms; /* 7 seconds - carousel slide duration */
 
 	/* ========================================
 	   SEMANTIC SPACING TOKENS
@@ -588,4 +595,199 @@ a:focus-visible {
 	clip: rect(0, 0, 0, 0);
 	white-space: nowrap;
 	border-width: 0;
+}
+
+/* ========================================
+   BACKGROUND CAROUSEL
+   ======================================== */
+
+/**
+ * Background Carousel Component
+ * 
+ * Global background carousel that displays on all pages.
+ * Uses CSS animations for smooth, continuous transitions.
+ * Intensely blurred on inner pages, fully visible on homepage.
+ */
+
+.background-carousel {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+	overflow: hidden;
+	pointer-events: none;
+	/* Subtle background color fallback to prevent black flash during transitions */
+	background-color: var(--color-bg);
+}
+
+.background-carousel__container {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.background-carousel__item {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center center;
+	opacity: 0;
+	animation-duration: var(--total-duration, 7000ms);
+	animation-iteration-count: infinite;
+	animation-delay: var(--animation-delay, 0ms);
+	animation-timing-function: linear;
+	animation-fill-mode: both;
+	/* animation-name is set dynamically via inline styles */
+	/* Ensure proper stacking - first visible item should be on top */
+	z-index: 1;
+	/* Performance optimizations for smooth animations */
+	will-change: opacity;
+	backface-visibility: hidden;
+	/* Force hardware acceleration for consistent rendering */
+	transform: translateZ(0);
+	/* Ensure consistent rendering across browsers */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+
+/* First visible item should be immediately visible and on top */
+.background-carousel__item[data-first-visible="true"] {
+	z-index: 2;
+	/* Ensure first item is visible before animation starts */
+	opacity: 1;
+}
+
+.background-carousel__video {
+	width: 100%;
+	height: 100%;
+	min-width: 100%;
+	min-height: 100%;
+}
+
+.background-carousel__image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center center;
+	min-width: 100%;
+	min-height: 100%;
+}
+
+/* Intense blur for inner pages */
+.background-carousel--inner .background-carousel__container {
+	filter: blur(20px);
+	transform: scale(1.1); /* Slight scale to hide blur edges */
+}
+
+.background-carousel--inner .background-carousel__item {
+	filter: blur(20px);
+}
+
+/* No blur on homepage */
+.background-carousel--homepage .background-carousel__container,
+.background-carousel--homepage .background-carousel__item {
+	filter: none;
+	transform: none;
+}
+
+.background-carousel--homepage .background-carousel__container {
+	transform: none;
+}
+
+/* Carousel fade animation */
+/* Each item fades in quickly, stays visible, then fades out */
+/* The delay determines when each item appears in the cycle */
+@keyframes carousel-fade {
+	0% {
+		opacity: 0;
+	}
+	1% {
+		opacity: 1;
+	}
+	49% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+/* First item should start visible - handled by animation keyframes */
+
+/* Single item: no animation needed, just show it */
+.background-carousel[data-total-items="1"] .background-carousel__item {
+	animation: none !important;
+	opacity: 1 !important;
+}
+
+/* Respect reduced motion preference */
+/* Note: Background carousel is excluded from reduced motion as it's decorative */
+@media (prefers-reduced-motion: reduce) {
+	.background-carousel__item {
+		/* Carousel should still animate - it's a background decorative element */
+		animation-duration: var(--total-duration, 7000ms) !important;
+		animation-iteration-count: infinite !important;
+		animation-name: inherit !important;
+	}
+}
+
+/* Page transition overlay */
+.background-carousel__overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: var(--color-bg);
+	opacity: 0;
+	pointer-events: none;
+	z-index: 9998;
+	transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.background-carousel__overlay.is-transitioning {
+	opacity: 1;
+	pointer-events: all;
+}
+
+/* Ensure carousel doesn't interfere with content */
+#page {
+	position: relative;
+	z-index: 1;
+}
+
+/* Hide carousel items that fail to load */
+.background-carousel__item[data-fallback="true"],
+.background-carousel__item[data-error="true"] {
+	display: none;
+}
+
+/* Optimize video performance - pause when hidden */
+.background-carousel__video {
+	will-change: opacity;
+	backface-visibility: hidden;
+	transform: translateZ(0);
+}
+
+/* Reduce video quality on slower connections */
+@media (prefers-reduced-data: reduce) {
+	.background-carousel__video {
+		display: none;
+	}
+	
+	.background-carousel__image {
+		display: block !important;
+		opacity: 1 !important;
+	}
 }

@@ -19,6 +19,11 @@
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
 
+<?php
+// Load background carousel component
+get_template_part( 'template-parts/components/background-carousel' );
+?>
+
 <div id="page" class="site">
 	<a class="skip-link" href="#primary"><?php esc_html_e( 'Skip to content', 'brace-yourself' ); ?></a>
 

@@ -31,3 +31,6 @@ require_once BRACE_YOURSELF_TEMPLATE_DIR . '/inc/performance.php';
 
 // Load template tags
 require_once BRACE_YOURSELF_TEMPLATE_DIR . '/inc/template-tags.php';
+
+// Load carousel functionality
+require_once BRACE_YOURSELF_TEMPLATE_DIR . '/inc/carousel.php';
