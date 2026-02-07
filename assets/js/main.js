@@ -100,8 +100,8 @@
 	 * Background Carousel
 	 * 
 	 * Handles video autoplay detection and fallback to images.
-	 * Ensures carousel continuity across page loads.
-	 * Implements lazy loading for videos to improve performance.
+	 * All carousel images load eagerly via src attributes (they're in-viewport).
+	 * Videos are lazy-loaded for performance.
 	 */
 	function initBackgroundCarousel() {
 		const carousel = document.querySelector('.background-carousel');
@@ -111,155 +111,12 @@
 
 		const videos = carousel.querySelectorAll('.background-carousel__video');
 		const images = carousel.querySelectorAll('.background-carousel__image');
-		
-		// Ensure first visible item is loaded before starting animation
-		const firstVisibleItem = carousel.querySelector('[data-first-visible="true"]');
-		if (firstVisibleItem) {
-			// If it's an image, wait for it to load
-			if (firstVisibleItem.tagName === 'IMG') {
-				if (firstVisibleItem.complete && firstVisibleItem.naturalHeight !== 0) {
-					// Image already loaded, proceed
-					startCarouselAnimations(carousel, videos, images);
-				} else {
-					// Wait for image to load
-					firstVisibleItem.addEventListener('load', function() {
-						startCarouselAnimations(carousel, videos, images);
-					}, { once: true });
-					
-					// Fallback: if image fails to load, start anyway after timeout
-					setTimeout(() => {
-						startCarouselAnimations(carousel, videos, images);
-					}, 3000);
-				}
-			} else {
-				// Video or other element, start immediately
-				startCarouselAnimations(carousel, videos, images);
-			}
-		} else {
-			// No first visible item, start normally
-			startCarouselAnimations(carousel, videos, images);
-		}
-	}
-	
-	/**
-	 * Start carousel animations and setup lazy loading
-	 */
-	function startCarouselAnimations(carousel, videos, images) {
-		// Lazy load images - only load when about to be visible
-		if (images.length > 0) {
-			setupImageLazyLoading(images, carousel);
-		}
-		
+
 		// Lazy load videos - only load when needed
 		if (videos.length > 0) {
 			setupVideoLazyLoading(videos, carousel);
 			// Check video autoplay support
 			checkVideoAutoplay(videos, images);
-		}
-		
-		// Store current carousel state for continuity
-		syncCarouselState(carousel);
-	}
-
-	/**
-	 * Lazy load images using Intersection Observer
-	 * Only loads images when they're about to become visible
-	 */
-	function setupImageLazyLoading(images, carousel) {
-		if (images.length === 0) {
-			return;
-		}
-
-		const slideDuration = parseInt(carousel.getAttribute('data-slide-duration'), 10) || 7000;
-		
-		// Use Intersection Observer if available
-		if ('IntersectionObserver' in window) {
-			const observer = new IntersectionObserver((entries) => {
-				entries.forEach(entry => {
-					if (entry.isIntersecting) {
-						const img = entry.target;
-						const src = img.getAttribute('data-src');
-						const srcset = img.getAttribute('data-srcset');
-						const sizes = img.getAttribute('data-sizes');
-						
-						if (src && !img.src) {
-							// Load the image
-							img.src = src;
-							if (srcset) {
-								img.srcset = srcset;
-							}
-							if (sizes) {
-								img.sizes = sizes;
-							}
-							img.removeAttribute('data-src');
-							img.removeAttribute('data-srcset');
-							img.removeAttribute('data-sizes');
-							
-							// Preload next image when current becomes visible
-							const nextIndex = parseInt(img.getAttribute('data-image-index'), 10) + 1;
-							const nextImg = Array.from(images).find(img => 
-								parseInt(img.getAttribute('data-image-index'), 10) === nextIndex
-							);
-							if (nextImg) {
-								const nextSrc = nextImg.getAttribute('data-src');
-								if (nextSrc) {
-									// Preload next image 2 seconds before it's needed
-									setTimeout(() => {
-										if (nextImg.getAttribute('data-src')) {
-											nextImg.src = nextSrc;
-											const nextSrcset = nextImg.getAttribute('data-srcset');
-											const nextSizes = nextImg.getAttribute('data-sizes');
-											if (nextSrcset) nextImg.srcset = nextSrcset;
-											if (nextSizes) nextImg.sizes = nextSizes;
-											nextImg.removeAttribute('data-src');
-											nextImg.removeAttribute('data-srcset');
-											nextImg.removeAttribute('data-sizes');
-										}
-									}, slideDuration - 2000);
-								}
-							}
-						}
-					}
-				});
-			}, {
-				root: carousel,
-				rootMargin: '50%', // Start loading when 50% visible
-				threshold: 0.1
-			});
-
-			// Observe all images except the first (which loads immediately)
-			images.forEach((img, index) => {
-				if (index > 0 && img.getAttribute('data-src')) {
-					observer.observe(img);
-				}
-			});
-		} else {
-			// Fallback: Load images progressively based on timing
-			images.forEach((img, index) => {
-				if (index === 0) {
-					return; // First image already loaded
-				}
-				
-				const src = img.getAttribute('data-src');
-				if (!src) {
-					return;
-				}
-				
-				// Load image before it's needed (2 seconds before)
-				const loadTime = index * slideDuration - 2000;
-				setTimeout(() => {
-					if (img.getAttribute('data-src')) {
-						img.src = src;
-						const srcset = img.getAttribute('data-srcset');
-						const sizes = img.getAttribute('data-sizes');
-						if (srcset) img.srcset = srcset;
-						if (sizes) img.sizes = sizes;
-						img.removeAttribute('data-src');
-						img.removeAttribute('data-srcset');
-						img.removeAttribute('data-sizes');
-					}
-				}, Math.max(0, loadTime));
-			});
 		}
 	}
 
@@ -281,7 +138,9 @@
 					if (entry.isIntersecting) {
 						const video = entry.target;
 						const videoSrc = video.getAttribute('data-video-src');
-						if (videoSrc && !video.querySelector('source[src="' + videoSrc + '"]')) {
+						// Check if source already exists safely (avoid XSS from URL injection)
+						const existingSource = Array.from(video.querySelectorAll('source')).find(source => source.src === videoSrc);
+						if (videoSrc && !existingSource) {
 							loadVideoSource(video, videoSrc);
 							// Load next video when current becomes visible
 							const nextIndex = parseInt(video.getAttribute('data-video-index'), 10) + 1;
@@ -373,8 +232,9 @@
 	 * Load video source dynamically
 	 */
 	function loadVideoSource(video, videoSrc) {
-		// Check if source already loaded
-		if (video.querySelector('source[src="' + videoSrc + '"]')) {
+		// Check if source already loaded safely (avoid XSS from URL injection)
+		const existingSource = Array.from(video.querySelectorAll('source')).find(source => source.src === videoSrc);
+		if (existingSource) {
 			return;
 		}
 
@@ -458,26 +318,6 @@
 				checkedCount++;
 			}
 		});
-	}
-
-	/**
-	 * Sync carousel state for continuity across pages
-	 */
-	function syncCarouselState(carousel) {
-		const slideDuration = parseInt(carousel.getAttribute('data-slide-duration'), 10) || 7000;
-		const totalItems = parseInt(carousel.getAttribute('data-total-items'), 10) || 1;
-		
-		// Calculate current animation progress
-		const now = Date.now();
-		const animationProgress = (now % slideDuration) / slideDuration;
-		const currentIndex = Math.floor(animationProgress * totalItems);
-		
-		// Store in sessionStorage for next page load
-		try {
-			sessionStorage.setItem('carousel_start', currentIndex.toString());
-		} catch (e) {
-			// SessionStorage not available - ignore
-		}
 	}
 
 	/**

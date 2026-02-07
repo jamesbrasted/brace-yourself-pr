@@ -12,106 +12,136 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Output dynamic carousel keyframe styles in wp_head.
- * This is better for performance and caching than inline styles.
+ * Preload the first carousel image to prevent background flash.
+ * Runs early in wp_head to start downloading immediately.
  */
-function brace_yourself_carousel_styles() {
-	// Only output if carousel has items
+function brace_yourself_preload_carousel_image() {
+	// Only on frontend, not admin
+	if ( is_admin() ) {
+		return;
+	}
+
 	$carousel_data = brace_yourself_get_carousel_data();
 	$carousel_items = brace_yourself_get_carousel_items();
 	
 	if ( empty( $carousel_items ) ) {
 		return;
 	}
+
+	// Get the first visible item (could be randomized)
+	$first_item = $carousel_items[0];
 	
-	$total_items = count( $carousel_items );
-	
-	// Calculate visibility percentages for dynamic keyframes
-	// Handle single item case (no animation needed)
-	if ( $total_items === 1 ) {
-		$item_visibility_percent = 100;
-		$fade_in_end_percent = 0;
-		$fade_out_start_percent = 100;
-		$fade_duration_percent = 0; // No fade needed for single item
-		$wrap_around_fade_start = 0;
-		$fade_out_end_percent = 100;
-	} else {
-		$item_visibility_percent = 100 / $total_items;
-		// Faster fade duration (12% of cycle) for quicker transitions
-		// Ensures images overlap during transition to prevent black background
-		$fade_duration_percent = min( 12, $item_visibility_percent * 0.24 ); // 12% or 24% of item visibility
-		$fade_in_end_percent = $fade_duration_percent;
-		// Fade out starts before next item's visibility window to create overlap
-		// This ensures next image is already fading in before current finishes fading out
-		$fade_out_start_percent = max( $fade_in_end_percent, $item_visibility_percent - $fade_duration_percent );
-		// Extend fade out to ensure overlap with next item
-		$fade_out_end_percent = min( 100, $item_visibility_percent + $fade_duration_percent );
-		// For smooth wrap-around: Item 1 needs to start fading in before cycle ends
-		// The wrap-around ensures Item 1 is visible when the animation loops from 100% back to 0%
-		// Start wrap-around fade-in early enough to ensure it's fully visible by 100%
-		// This prevents any black background when transitioning from last item back to first
-		// Use a slightly longer fade duration for wrap-around to guarantee smooth transition
-		$wrap_around_fade_duration = $fade_duration_percent * 1.2; // 20% longer for extra safety
-		$wrap_around_fade_start = max( $fade_out_end_percent, 100 - $wrap_around_fade_duration );
+	// Only preload if it's an image (videos handle their own preloading)
+	if ( isset( $first_item['type'] ) && 'image' === $first_item['type'] && ! empty( $first_item['url'] ) ) {
+		$image_url = esc_url( $first_item['url'] );
+		$srcset = ! empty( $first_item['srcset'] ) ? esc_attr( $first_item['srcset'] ) : '';
+		
+		// Preload the image with highest priority
+		echo '<link rel="preload" as="image" href="' . $image_url . '"';
+		if ( $srcset ) {
+			echo ' imagesrcset="' . $srcset . '" imagesizes="100vw"';
+		}
+		echo ' fetchpriority="high">' . "\n";
 	}
-	
+}
+add_action( 'wp_head', 'brace_yourself_preload_carousel_image', 1 );
+
+/**
+ * Output dynamic carousel keyframe styles in wp_head.
+ *
+ * Uses "fade on top" approach with z-index control:
+ * - During each crossfade, the INCOMING image fades in ON TOP (z-index: 10)
+ *   while the OUTGOING image stays at full opacity underneath (z-index: 0).
+ * - This guarantees ZERO background bleed-through because the outgoing image
+ *   is always fully opaque beneath the partially-transparent incoming image.
+ * - CSS alpha compositing: incoming_alpha * img_in + (1 - incoming_alpha) * img_out
+ *   This is a perfect blend of two images with NO background contribution.
+ *
+ * Previous approach (simultaneous crossfade) was fundamentally flawed:
+ * - Two overlapping elements at 50% opacity each = 75% opaque (25% background bleed)
+ * - CSS alpha compositing is multiplicative, NOT additive
+ */
+function brace_yourself_carousel_styles() {
+	// Only output if carousel has items
+	$carousel_data = brace_yourself_get_carousel_data();
+	$carousel_items = brace_yourself_get_carousel_items();
+
+	if ( empty( $carousel_items ) ) {
+		return;
+	}
+
+	$total_items = count( $carousel_items );
+
+	// Single item: no animation needed (handled by CSS rule in main.css)
+	if ( $total_items <= 1 ) {
+		return;
+	}
+
+	$ivp  = 100 / $total_items; // Item visibility percent of total cycle
+	$fade = min( 15, $ivp / 3 ); // Crossfade duration as % of cycle
+
+	// Format helper: clamp to 0-100 and format with 2 decimal places
+	$fmt = function( $val ) {
+		$val = max( 0, min( 100, $val ) );
+		return number_format( $val, 2, '.', '' );
+	};
+
 	?>
 	<style id="brace-yourself-carousel-styles">
-	/* Keyframes for Item 1 (with wrap-around) */
-	@keyframes carousel-fade-<?php echo esc_attr( $total_items ); ?>-first {
-		/* Start visible (from wrap-around) */
-		0% { opacity: 1; }
-		<?php if ( $fade_in_end_percent > 0 ) : ?>
-		<?php echo esc_attr( $fade_in_end_percent ); ?>% { opacity: 1; }
-		<?php endif; ?>
-		/* Stay fully visible during visibility window */
-		<?php echo esc_attr( $fade_out_start_percent ); ?>% { opacity: 1; }
-		/* Fade out - overlaps with next item's fade in */
-		<?php echo esc_attr( $fade_out_end_percent ); ?>% { opacity: 0; }
-		<?php if ( $total_items > 1 ) : ?>
-		/* Wrap-around: start fading in before cycle ends to ensure seamless loop */
-		/* Always include wrap-around start keyframe to ensure smooth transition */
-		<?php if ( $wrap_around_fade_start < 100 ) : ?>
-			<?php if ( $wrap_around_fade_start >= $fade_out_end_percent ) : ?>
-			/* Wrap-around fade-in starts here - ensures smooth transition from fade-out */
-			<?php echo esc_attr( $wrap_around_fade_start ); ?>% { opacity: 0; }
-			<?php endif; ?>
-		<?php endif; ?>
-		/* Complete wrap-around fade-in by 100% so Item 1 is fully visible when animation loops */
-		/* This ensures seamless transition from 100% back to 0% */
-		100% { opacity: 1; }
-		<?php endif; ?>
-	}
-	
-	/* Keyframes for Items 2+ (no wrap-around, stay invisible after fade-out) */
-	<?php if ( $total_items > 1 ) : ?>
-	@keyframes carousel-fade-<?php echo esc_attr( $total_items ); ?>-other {
-		/* Start invisible */
-		0% { opacity: 0; }
-		/* Fade in quickly */
-		<?php if ( $fade_in_end_percent > 0 ) : ?>
-		<?php echo esc_attr( $fade_in_end_percent ); ?>% { opacity: 1; }
-		<?php endif; ?>
-		/* Stay fully visible during visibility window */
-		<?php echo esc_attr( $fade_out_start_percent ); ?>% { opacity: 1; }
-		/* Fade out - overlaps with next item's fade in */
-		<?php echo esc_attr( $fade_out_end_percent ); ?>% { opacity: 0; }
-		/* Stay invisible for the rest of the cycle (no wrap-around) */
-		100% { opacity: 0; }
-	}
+	<?php for ( $pos = 0; $pos < $total_items; $pos++ ) : ?>
+	<?php
+		$vis_start = $pos * $ivp;
+		$vis_end   = ( $pos + 1 ) * $ivp;
+	?>
+	@keyframes carousel-pos-<?php echo esc_attr( $pos ); ?> {
+	<?php if ( $pos === 0 ) : ?>
+		<?php
+		// Position 0: visible at cycle start. Fade-in wraps around end of cycle.
+		// Timeline: [visible 0→vis_end] [hidden vis_end→(100-fade)] [fade-in (100-fade)→100]
+		$fi_start = 100 - $fade;
+		$drop_at  = $vis_end;
+		?>
+		/* Pos 0: visible at start, fades back in at cycle end (wrap-around) */
+		0% { opacity: 1; z-index: 10; }
+		<?php echo $fmt( 1 ); ?>% { opacity: 1; z-index: 0; }
+		<?php echo $fmt( $drop_at ); ?>% { opacity: 1; z-index: 0; }
+		<?php echo $fmt( $drop_at + 0.1 ); ?>% { opacity: 0; z-index: 0; }
+		<?php echo $fmt( $fi_start - 1 ); ?>% { opacity: 0; z-index: 0; }
+		<?php echo $fmt( $fi_start ); ?>% { opacity: 0; z-index: 10; }
+		100% { opacity: 1; z-index: 10; }
+	<?php elseif ( $pos === $total_items - 1 ) : ?>
+		<?php
+		// Last position: stays visible through cycle end. Drop happens at iteration boundary
+		// (100% opacity=1 → 0% opacity=0 jump, invisible because pos 0 covers it at z:10).
+		$fi_start = $vis_start - $fade;
+		$fi_end   = $vis_start;
+		?>
+		/* Pos <?php echo $pos; ?>: last item, visible until cycle end, drops at loop boundary */
+		0% { opacity: 0; z-index: 0; }
+		<?php echo $fmt( $fi_start - 1 ); ?>% { opacity: 0; z-index: 0; }
+		<?php echo $fmt( $fi_start ); ?>% { opacity: 0; z-index: 10; }
+		<?php echo $fmt( $fi_end ); ?>% { opacity: 1; z-index: 10; }
+		<?php echo $fmt( $fi_end + 1 ); ?>% { opacity: 1; z-index: 0; }
+		100% { opacity: 1; z-index: 0; }
+	<?php else : ?>
+		<?php
+		// Middle position: standard fade-in, stay visible, drop when next item covers.
+		$fi_start = $vis_start - $fade;
+		$fi_end   = $vis_start;
+		$drop_at  = $vis_end;
+		?>
+		/* Pos <?php echo $pos; ?>: middle item */
+		0% { opacity: 0; z-index: 0; }
+		<?php echo $fmt( $fi_start - 1 ); ?>% { opacity: 0; z-index: 0; }
+		<?php echo $fmt( $fi_start ); ?>% { opacity: 0; z-index: 10; }
+		<?php echo $fmt( $fi_end ); ?>% { opacity: 1; z-index: 10; }
+		<?php echo $fmt( $fi_end + 1 ); ?>% { opacity: 1; z-index: 0; }
+		<?php echo $fmt( $drop_at ); ?>% { opacity: 1; z-index: 0; }
+		<?php echo $fmt( $drop_at + 0.1 ); ?>% { opacity: 0; z-index: 0; }
+		100% { opacity: 0; z-index: 0; }
 	<?php endif; ?>
-	
-	/* Apply first-item animation to the first visible item (with wrap-around) */
-	.background-carousel[data-total-items="<?php echo esc_attr( $total_items ); ?>"] .background-carousel__item[data-first-visible="true"] {
-		animation-name: carousel-fade-<?php echo esc_attr( $total_items ); ?>-first !important;
 	}
-	
-	<?php if ( $total_items > 1 ) : ?>
-	/* Apply other-item animation to all other items (no wrap-around) */
-	.background-carousel[data-total-items="<?php echo esc_attr( $total_items ); ?>"] .background-carousel__item:not([data-first-visible="true"]) {
-		animation-name: carousel-fade-<?php echo esc_attr( $total_items ); ?>-other !important;
-	}
-	<?php endif; ?>
+	<?php endfor; ?>
 	</style>
 	<?php
 }
@@ -224,9 +254,11 @@ function brace_yourself_get_carousel_data() {
 	if ( ! is_array( $videos ) ) {
 		$videos = array();
 	}
-	if ( ! is_numeric( $duration ) || $duration < 3 ) {
+	// Validate and sanitize duration (minimum 3 seconds, maximum 30 seconds)
+	if ( ! is_numeric( $duration ) || $duration < 3 || $duration > 30 ) {
 		$duration = 7;
 	}
+	$duration = absint( $duration );
 
 	return array(
 		'images'        => $images,
