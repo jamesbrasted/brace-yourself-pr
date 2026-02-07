@@ -147,3 +147,20 @@ function brace_yourself_limit_primary_menu_items( $items, $menu ) {
 	return $items;
 }
 add_filter( 'wp_get_nav_menu_items', 'brace_yourself_limit_primary_menu_items', 10, 2 );
+
+/**
+ * Limit sidebar-1 (main widget area) to maximum of 3 widgets.
+ * Extra widgets assigned in Appearance > Widgets are not displayed.
+ *
+ * @param array $value The sidebars_widgets option value.
+ * @return array Filtered value with sidebar-1 limited to 3 items.
+ */
+function brace_yourself_limit_sidebar_widgets( $value ) {
+	if ( ! is_array( $value ) || empty( $value['sidebar-1'] ) || ! is_array( $value['sidebar-1'] ) ) {
+		return $value;
+	}
+	$value         = array_merge( array(), $value );
+	$value['sidebar-1'] = array_slice( $value['sidebar-1'], 0, 3 );
+	return $value;
+}
+add_filter( 'option_sidebars_widgets', 'brace_yourself_limit_sidebar_widgets' );

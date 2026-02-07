@@ -55,18 +55,17 @@ get_template_part( 'template-parts/components/background-carousel' );
 			<?php endif; ?>
 		</div><!-- .site-branding -->
 
-		<nav id="site-navigation" class="main-navigation">
-			<div class="container">
-				<?php
-				wp_nav_menu(
-					array(
-						'theme_location' => 'primary',
-						'menu_id'        => 'primary-menu',
-						'menu_class'     => 'primary-menu',
-						'container'      => false,
-					)
-				);
-				?>
-			</div><!-- .container -->
-		</nav><!-- #site-navigation -->
 	</header><!-- #masthead -->
+
+	<nav id="site-navigation" class="main-navigation">
+		<?php
+		wp_nav_menu(
+			array(
+				'theme_location' => 'primary',
+				'menu_id'        => 'primary-menu',
+				'menu_class'     => 'primary-menu',
+				'container'      => false,
+			)
+		);
+		?>
+	</nav><!-- #site-navigation -->
