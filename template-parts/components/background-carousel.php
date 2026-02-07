@@ -62,7 +62,6 @@ $random_offset = ( $total_items > 1 ) ? wp_rand( 0, $total_items - 1 ) * $slide_
 				<video
 					class="background-carousel__item background-carousel__video"
 					<?php if ( $is_first ) : ?>
-						data-first-visible="true"
 						autoplay
 					<?php endif; ?>
 					loop
@@ -86,9 +85,6 @@ $random_offset = ( $total_items > 1 ) ? wp_rand( 0, $total_items - 1 ) * $slide_
 			<?php else : ?>
 				<img
 					class="background-carousel__item background-carousel__image"
-					<?php if ( $is_first ) : ?>
-						data-first-visible="true"
-					<?php endif; ?>
 					src="<?php echo esc_url( $item['url'] ); ?>"
 					<?php if ( ! empty( $item['srcset'] ) ) : ?>
 						srcset="<?php echo esc_attr( $item['srcset'] ); ?>"

@@ -28,39 +28,35 @@ get_template_part( 'template-parts/components/background-carousel' );
 	<a class="skip-link" href="#primary"><?php esc_html_e( 'Skip to content', 'brace-yourself' ); ?></a>
 
 	<header id="masthead" class="site-header">
-		<div class="container">
-			<div class="site-branding">
+		<div class="site-branding">
 				<?php
 				the_custom_logo();
 				if ( is_front_page() && is_home() ) :
 					?>
 					<h1 class="site-title">
-						<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
-							<?php bloginfo( 'name' ); ?>
+						<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="site-title__link">
+							<?php brace_yourself_site_title_svg(); ?>
 						</a>
 					</h1>
 					<?php
 				else :
 					?>
 					<p class="site-title">
-						<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
-							<?php bloginfo( 'name' ); ?>
+						<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="site-title__link">
+							<?php brace_yourself_site_title_svg(); ?>
 						</a>
 					</p>
 					<?php
 				endif;
-				$brace_yourself_description = get_bloginfo( 'description', 'display' );
-				if ( $brace_yourself_description || is_customize_preview() ) :
-					?>
-					<p class="site-description"><?php echo $brace_yourself_description; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
-				<?php endif; ?>
-			</div><!-- .site-branding -->
+			$brace_yourself_description = get_bloginfo( 'description', 'display' );
+			if ( $brace_yourself_description || is_customize_preview() ) :
+				?>
+				<p class="site-description"><?php echo $brace_yourself_description; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
+			<?php endif; ?>
+		</div><!-- .site-branding -->
 
-			<nav id="site-navigation" class="main-navigation">
-				<button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false">
-					<span class="sr-only"><?php esc_html_e( 'Primary Menu', 'brace-yourself' ); ?></span>
-					<?php esc_html_e( 'Menu', 'brace-yourself' ); ?>
-				</button>
+		<nav id="site-navigation" class="main-navigation">
+			<div class="container">
 				<?php
 				wp_nav_menu(
 					array(
@@ -71,6 +67,6 @@ get_template_part( 'template-parts/components/background-carousel' );
 					)
 				);
 				?>
-			</nav><!-- #site-navigation -->
-		</div><!-- .container -->
+			</div><!-- .container -->
+		</nav><!-- #site-navigation -->
 	</header><!-- #masthead -->

@@ -23,6 +23,14 @@ html {
 	font-size: 100%; /* 16px browser default */
 	-webkit-text-size-adjust: 100%;
 	-ms-text-size-adjust: 100%;
+	scroll-behavior: smooth;
+}
+
+/* Disable smooth scroll for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
 }
 
 body {
@@ -379,47 +387,127 @@ a:focus-visible {
 
 /* Site Header */
 .site-header {
-	padding: var(--space-600) 0;
-	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	position: relative;
+	width: 100%;
+	overflow: visible;
 }
 
 .site-branding {
-	margin-bottom: var(--space-600);
+	width: 100vw;
+	position: relative;
+	left: 50%;
+	right: 50%;
+	margin-left: -50vw;
+	margin-right: -50vw;
+	text-align: center;
+	padding: var(--space-600) 0;
+	overflow: hidden;
+	box-sizing: border-box;
+	margin-bottom: 0;
 }
 
 .site-title {
-	font-size: var(--text-xl);
-	margin-bottom: var(--space-200);
+	margin: 0;
+	line-height: 1;
+	width: 100%;
+	overflow: hidden;
+	max-width: none;
 }
 
-.site-title a {
+.site-title__ticker {
+	display: flex;
+	gap: 0.5vw;
+	animation: ticker-tape 30s linear infinite;
+	will-change: transform;
+}
+
+.site-title__svg--mobile {
+	width: 250vw;
+	height: auto;
+	display: block;
+	flex-shrink: 0;
+	max-width: none;
+	/* Path-based SVG with exact viewBox (1400×96) — scales proportionally */
+}
+
+.site-title__svg--desktop {
+	display: none;
+}
+
+.site-title__link {
 	color: var(--color-text);
 	text-decoration: none;
+	display: block;
 }
 
 .site-description {
 	font-size: var(--text-sm);
 	color: rgba(255, 255, 255, 0.7);
+	margin-top: var(--space-200);
+}
+
+/* Ticker tape animation for mobile SVG */
+/* Translates by exactly one pattern (250vw copy + 0.5vw gap) for seamless loop */
+@keyframes ticker-tape {
+	0% {
+		transform: translateX(0);
+	}
+	100% {
+		transform: translateX(calc(-250vw - 0.5vw));
+	}
 }
 
 .main-navigation {
-	margin-top: var(--space-600);
+	position: sticky;
+	top: 0;
+	z-index: 100;
+	padding: var(--space-600) 0;
+	margin-top: 0;
 }
 
-.menu-toggle {
-	background: transparent;
-	border: 1px solid var(--color-text);
-	color: var(--color-text);
-	padding: var(--space-400) var(--space-600);
-	cursor: pointer;
-	font-size: var(--font-body);
-}
 
 .primary-menu {
 	list-style: none;
-	display: flex;
-	flex-direction: column;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
 	gap: var(--space-400);
+	width: 100%;
+}
+
+/* Mobile: 2 items - space-between (first at start, second at end) */
+.primary-menu > li:first-child:nth-last-child(2) {
+	grid-column: 1;
+	justify-self: start;
+}
+
+.primary-menu > li:first-child:nth-last-child(2) ~ li {
+	grid-column: 2;
+	justify-self: end;
+}
+
+/* Mobile: 4 items - corners (2x2 grid) */
+.primary-menu > li:first-child:nth-last-child(4) {
+	grid-column: 1;
+	grid-row: 1;
+	justify-self: start;
+}
+
+.primary-menu > li:first-child:nth-last-child(4) ~ li:nth-child(2) {
+	grid-column: 2;
+	grid-row: 1;
+	justify-self: end;
+}
+
+.primary-menu > li:first-child:nth-last-child(4) ~ li:nth-child(3) {
+	grid-column: 1;
+	grid-row: 2;
+	justify-self: start;
+}
+
+.primary-menu > li:first-child:nth-last-child(4) ~ li:nth-child(4) {
+	grid-column: 2;
+	grid-row: 2;
+	justify-self: end;
 }
 
 .primary-menu a {
@@ -428,31 +516,71 @@ a:focus-visible {
 }
 
 .primary-menu.is-open {
-	display: flex;
+	display: grid;
 }
 
 @media (min-width: 768px) {
-	.site-header .container {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-
 	.site-branding {
+		padding: var(--space-600) 0;
+		width: 100vw;
+		left: 50%;
+		right: 50%;
+		margin-left: -50vw;
+		margin-right: -50vw;
 		margin-bottom: 0;
 	}
 
-	.main-navigation {
-		margin-top: 0;
+	.site-title {
+		width: 100vw;
+		max-width: none;
+		display: block;
+		text-align: center;
+		margin: 0;
+		overflow: visible;
 	}
 
-	.menu-toggle {
+	.site-title__link {
+		width: 100vw;
+		display: block;
+	}
+
+	.site-title__ticker {
 		display: none;
 	}
 
+	.site-title__svg--desktop {
+		display: block;
+		width: calc(100vw - var(--space-600) * 2);
+		height: auto;
+		max-width: none;
+		margin-left: auto;
+		margin-right: auto;
+		/* Path-based SVG with exact viewBox (1400×96) — space-600 padding either side */
+	}
+
 	.primary-menu {
-		flex-direction: row;
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
 		gap: var(--space-700);
+		width: 100%;
+	}
+
+	/* Desktop: 2 items - space-between (first at start, second at end) */
+	.primary-menu > li:first-child:nth-last-child(2) {
+		grid-column: 1;
+		justify-self: start;
+	}
+
+	.primary-menu > li:first-child:nth-last-child(2) ~ li {
+		grid-column: 4;
+		justify-self: end;
+	}
+
+	/* Desktop: 4 items - evenly spaced across all columns */
+	.primary-menu > li:first-child:nth-last-child(4),
+	.primary-menu > li:first-child:nth-last-child(4) ~ li {
+		grid-column: auto;
+		justify-self: center;
 	}
 }
 
@@ -572,17 +700,21 @@ a:focus-visible {
 /* Skip to content link */
 .skip-link {
 	position: absolute;
-	top: -40px;
+	top: -9999px;
 	left: 0;
 	background: var(--color-accent);
 	color: var(--color-text);
 	padding: var(--space-400);
 	text-decoration: none;
 	z-index: 100000;
+	clip: rect(1px, 1px, 1px, 1px);
+	clip-path: inset(50%);
 }
 
 .skip-link:focus {
 	top: 0;
+	clip: auto;
+	clip-path: none;
 }
 
 /* Screen reader only */
@@ -673,23 +805,9 @@ a:focus-visible {
 	}
 }
 
-/* Page transition overlay */
+/* Page transition overlay (kept for potential future use, inactive without JS) */
 .background-carousel__overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background-color: var(--color-bg);
-	opacity: 0;
-	pointer-events: none;
-	z-index: 9998;
-	transition: opacity var(--duration-fast) var(--ease-standard);
-}
-
-.background-carousel__overlay.is-transitioning {
-	opacity: 1;
-	pointer-events: all;
+	display: none;
 }
 
 /* Ensure carousel doesn't interfere with content */
@@ -700,6 +818,7 @@ a:focus-visible {
 	/* This prevents site background from showing when carousel items are transparent */
 	background-color: transparent;
 }
+
 
 /* Hide carousel items that fail to load */
 .background-carousel__item[data-fallback="true"],

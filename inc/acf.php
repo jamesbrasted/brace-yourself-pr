@@ -23,6 +23,10 @@ function brace_yourself_acf_active() {
 /**
  * Get carousel settings page ID.
  * Creates the page if it doesn't exist (for ACF Free compatibility).
+ * 
+ * NOTE: This page is automatically excluded from navigation menus via
+ * brace_yourself_exclude_carousel_settings_from_menus() filter.
+ * It should never appear in site navigation as it's only for admin use.
  *
  * @return int|false Page ID or false on failure.
  */
@@ -44,6 +48,11 @@ function brace_yourself_get_carousel_settings_page_id() {
 	);
 
 	$page_id = wp_insert_post( $page_data );
+	
+	// Mark page to exclude from search (optional, but helpful)
+	if ( $page_id ) {
+		update_post_meta( $page_id, '_exclude_from_search', '1' );
+	}
 	
 	return $page_id ? $page_id : false;
 }

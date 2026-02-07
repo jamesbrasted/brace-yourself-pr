@@ -125,3 +125,25 @@ function brace_yourself_image_sizes() {
 	add_image_size( 'thumbnail-small', 150, 150, true );
 }
 add_action( 'after_setup_theme', 'brace_yourself_image_sizes' );
+
+/**
+ * Limit primary navigation menu to maximum of 4 items.
+ * This ensures the menu stays clean and manageable for 2-4 items.
+ *
+ * @param array $items An array of menu item objects.
+ * @param object $menu The menu object.
+ * @return array Filtered array of menu items.
+ */
+function brace_yourself_limit_primary_menu_items( $items, $menu ) {
+	// Only limit the primary menu location
+	if ( isset( $menu->term_id ) ) {
+		$locations = get_nav_menu_locations();
+		if ( isset( $locations['primary'] ) && $locations['primary'] === $menu->term_id ) {
+			// Limit to first 4 items
+			return array_slice( $items, 0, 4 );
+		}
+	}
+	
+	return $items;
+}
+add_filter( 'wp_get_nav_menu_items', 'brace_yourself_limit_primary_menu_items', 10, 2 );

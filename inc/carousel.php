@@ -14,6 +14,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Preload the first carousel image to prevent background flash.
  * Runs early in wp_head to start downloading immediately.
+ * 
+ * Note: With randomization, this preloads the first DOM item, which may not
+ * be the first visible item. However, since all images load eagerly via src
+ * attributes, this is a minor optimization and doesn't affect functionality.
  */
 function brace_yourself_preload_carousel_image() {
 	// Only on frontend, not admin
@@ -28,7 +32,7 @@ function brace_yourself_preload_carousel_image() {
 		return;
 	}
 
-	// Get the first visible item (could be randomized)
+	// Preload first DOM item (all images load eagerly anyway, this is just a hint)
 	$first_item = $carousel_items[0];
 	
 	// Only preload if it's an image (videos handle their own preloading)
