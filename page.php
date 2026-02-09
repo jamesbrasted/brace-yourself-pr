@@ -25,8 +25,4 @@ get_header();
 	</main><!-- #main -->
 
 <?php
-// Don't show sidebar on front page
-if ( ! is_front_page() ) {
-	get_sidebar();
-}
 get_footer();

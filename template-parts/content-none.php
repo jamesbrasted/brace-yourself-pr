@@ -32,16 +32,12 @@
 		elseif ( is_search() ) :
 			?>
 
-			<p><?php esc_html_e( 'Sorry, but nothing matched your search terms. Please try again with some different keywords.', 'brace-yourself' ); ?></p>
-			<?php
-			get_search_form();
+			<p><?php esc_html_e( 'Sorry, but nothing matched your search terms.', 'brace-yourself' ); ?></p>
 
 		else :
 			?>
 
-			<p><?php esc_html_e( 'It seems we can\'t find what you\'re looking for. Perhaps searching can help.', 'brace-yourself' ); ?></p>
-			<?php
-			get_search_form();
+			<p><?php esc_html_e( 'It seems we can\'t find what you\'re looking for.', 'brace-yourself' ); ?></p>
 
 		endif;
 		?>

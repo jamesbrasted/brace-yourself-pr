@@ -88,10 +88,10 @@ Quick reference for the Brace Yourself theme design system.
 
 ## Line Height
 
-- `--line-height-tight: 1.2` - Headings
-- `--line-height-base: 1.5` - Body text (default)
-- `--line-height-relaxed: 1.75` - Long-form content
-- `--line-height-loose: 2` - Spacious layouts
+- `--line-height-tight: 1` - Headings
+- `--line-height-base: 1.2` - Body text (default)
+- `--line-height-relaxed: 1.3` - Long-form content
+- `--line-height-loose: 1.4` - Spacious layouts
 
 ## Letter Spacing
 

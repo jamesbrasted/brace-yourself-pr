@@ -5,8 +5,8 @@
  * @package Brace_Yourself
  */
 
-// Don't render footer content on front page or About page
-if ( is_front_page() || is_page( 'about' ) ) {
+// Don't render footer content on front page
+if ( is_front_page() ) {
 	?>
 </div><!-- #page -->
 
@@ -19,25 +19,36 @@ if ( is_front_page() || is_page( 'about' ) ) {
 }
 ?>
 
-	<?php if ( has_nav_menu( 'footer' ) ) : ?>
+	<?php if ( has_nav_menu( 'footer' ) || is_active_sidebar( 'footer-left' ) || is_active_sidebar( 'footer-right' ) ) : ?>
 	<footer id="colophon" class="site-footer">
-		<?php
-		wp_nav_menu(
-			array(
-				'theme_location' => 'footer',
-				'menu_id'        => 'footer-menu',
-				'menu_class'     => 'footer-menu',
-				'container'      => false,
-				'depth'          => 1,
-			)
-		);
-		?>
-		<div class="site-info">
-			<p>
-				&copy; <?php echo esc_html( date( 'Y' ) ); ?> <?php bloginfo( 'name' ); ?>.
-				<?php esc_html_e( 'All rights reserved.', 'brace-yourself' ); ?>
-			</p>
-		</div>
+		<?php if ( has_nav_menu( 'footer' ) ) : ?>
+			<?php
+			wp_nav_menu(
+				array(
+					'theme_location' => 'footer',
+					'menu_id'        => 'footer-menu',
+					'menu_class'     => 'footer-menu',
+					'container'      => false,
+					'depth'          => 1,
+				)
+			);
+			?>
+		<?php endif; ?>
+
+		<?php if ( is_active_sidebar( 'footer-left' ) || is_active_sidebar( 'footer-right' ) ) : ?>
+			<div class="site-footer__inner">
+				<?php if ( is_active_sidebar( 'footer-left' ) ) : ?>
+					<div class="site-footer__left">
+						<?php dynamic_sidebar( 'footer-left' ); ?>
+					</div>
+				<?php endif; ?>
+				<?php if ( is_active_sidebar( 'footer-right' ) ) : ?>
+					<div class="site-footer__right">
+						<?php dynamic_sidebar( 'footer-right' ); ?>
+					</div>
+				<?php endif; ?>
+			</div>
+		<?php endif; ?>
 	</footer><!-- #colophon -->
 	<?php endif; ?>
 </div><!-- #page -->

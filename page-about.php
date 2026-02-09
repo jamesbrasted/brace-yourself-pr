@@ -42,5 +42,4 @@ get_header();
 	</main><!-- #main -->
 
 <?php
-// Don't show sidebar on About page
 get_footer();
