@@ -9,7 +9,10 @@
 
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 	<header class="entry-header">
-		<?php the_title( '<h1 class="entry-title">', '</h1>' ); ?>
+		<?php
+		// Keep semantic H1 for SEO and accessibility, but hide it visually.
+		the_title( '<h1 class="entry-title sr-only">', '</h1>' );
+		?>
 	</header><!-- .entry-header -->
 
 	<?php brace_yourself_post_thumbnail(); ?>

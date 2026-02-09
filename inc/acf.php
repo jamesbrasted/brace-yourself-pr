@@ -21,6 +21,17 @@ function brace_yourself_acf_active() {
 }
 
 /**
+ * Get front page ID.
+ * Returns the ID of the page set as the static front page.
+ *
+ * @return int|false Page ID or false if no static front page is set.
+ */
+function brace_yourself_get_front_page_id() {
+	$front_page_id = get_option( 'page_on_front' );
+	return $front_page_id ? absint( $front_page_id ) : false;
+}
+
+/**
  * Get carousel settings page ID.
  * Creates the page if it doesn't exist (for ACF Free compatibility).
  * 
@@ -211,82 +222,6 @@ function brace_yourself_register_acf_field_groups() {
 		return;
 	}
 
-	// Get carousel settings page ID for exclusion
-	$carousel_page_id = brace_yourself_get_carousel_settings_page_id();
-
-	// Example: Hero Section Field Group
-	acf_add_local_field_group(
-		array(
-			'key'                   => 'group_hero_section',
-			'title'                 => 'Hero Section',
-			'fields'                => array(
-				array(
-					'key'               => 'field_hero_heading',
-					'label'             => 'Heading',
-					'name'              => 'heading',
-					'type'              => 'text',
-					'required'          => 1,
-					'placeholder'       => 'Enter hero heading',
-				),
-				array(
-					'key'               => 'field_hero_subheading',
-					'label'             => 'Subheading',
-					'name'              => 'subheading',
-					'type'              => 'textarea',
-					'rows'              => 3,
-				),
-				array(
-					'key'               => 'field_hero_image',
-					'label'             => 'Hero Image',
-					'name'              => 'image',
-					'type'              => 'image',
-					'return_format'     => 'array',
-					'preview_size'      => 'medium',
-					'library'          => 'all',
-				),
-				array(
-					'key'               => 'field_hero_cta_text',
-					'label'             => 'CTA Button Text',
-					'name'              => 'cta_text',
-					'type'              => 'text',
-				),
-				array(
-					'key'               => 'field_hero_cta_link',
-					'label'             => 'CTA Button Link',
-					'name'              => 'cta_link',
-					'type'              => 'link',
-				),
-			),
-			'location'              => $carousel_page_id ? array(
-				array(
-					array(
-						'param'    => 'post_type',
-						'operator' => '==',
-						'value'    => 'page',
-					),
-					array(
-						'param'    => 'page',
-						'operator' => '!=',
-						'value'    => $carousel_page_id,
-					),
-				),
-			) : array(
-				array(
-					array(
-						'param'    => 'post_type',
-						'operator' => '==',
-						'value'    => 'page',
-					),
-				),
-			),
-			'menu_order'            => 0,
-			'position'              => 'normal',
-			'style'                 => 'default',
-			'label_placement'       => 'top',
-			'instruction_placement' => 'label',
-		)
-	);
-
 	// Background Carousel Field Group
 	// Location: Options page (ACF Pro) OR Carousel Settings page only (ACF Free)
 	$carousel_location = array();
@@ -329,63 +264,51 @@ function brace_yourself_register_acf_field_groups() {
 		)
 	);
 
+	// Homepage Intro Field Group
+	// Location: Front page (Homepage page) only
+	$front_page_id = brace_yourself_get_front_page_id();
+	$homepage_intro_location = array();
+	
+	if ( $front_page_id ) {
+		$homepage_intro_location[] = array(
+			array(
+				'param'    => 'page',
+				'operator' => '==',
+				'value'    => $front_page_id,
+			),
+		);
+	}
+
+	acf_add_local_field_group(
+		array(
+			'key'                   => 'group_homepage_intro',
+			'title'                 => 'Homepage Intro',
+			'fields'                => array(
+				array(
+					'key'               => 'field_homepage_intro_text',
+					'label'             => 'Intro Text',
+					'name'              => 'homepage_intro_text',
+					'type'              => 'text',
+					'instructions'      => 'A line of copy displayed at the bottom of the viewport on the homepage.',
+					'required'          => 0,
+					'placeholder'       => 'Enter homepage intro text',
+					'default_value'     => '',
+				),
+			),
+			'location'              => $homepage_intro_location,
+			'active'                => 1,
+			'menu_order'            => 1,
+			'position'              => 'normal',
+			'style'                 => 'default',
+			'label_placement'       => 'top',
+			'instruction_placement' => 'label',
+		)
+	);
+
 	// Add more field groups here as needed
 }
 add_action( 'acf/init', 'brace_yourself_register_acf_field_groups' );
 
-/**
- * Hide Hero fields on Carousel Settings page.
- * Uses ACF filter to remove field group when editing carousel settings page.
- */
-function brace_yourself_hide_hero_on_carousel_settings( $field_groups, $options = array() ) {
-	if ( ! is_admin() ) {
-		return $field_groups;
-	}
-
-	// Check if we're editing a page
-	$post_id = 0;
-	if ( isset( $options['post_id'] ) ) {
-		$post_id = absint( $options['post_id'] );
-	} elseif ( isset( $_GET['post'] ) ) {
-		$post_id = absint( $_GET['post'] );
-	} elseif ( isset( $GLOBALS['post'] ) && $GLOBALS['post'] ) {
-		$post_id = $GLOBALS['post']->ID;
-	}
-
-	if ( ! $post_id ) {
-		return $field_groups;
-	}
-
-	// Check if this is the carousel settings page (by ID or slug)
-	$carousel_page = get_page_by_path( 'carousel-settings', OBJECT, 'page' );
-	$is_carousel_page = false;
-	
-	if ( $carousel_page && $post_id === $carousel_page->ID ) {
-		$is_carousel_page = true;
-	} else {
-		// Also check by slug from post object
-		$post_obj = get_post( $post_id );
-		if ( $post_obj && 'carousel-settings' === $post_obj->post_name ) {
-			$is_carousel_page = true;
-		}
-	}
-
-	if ( ! $is_carousel_page ) {
-		return $field_groups;
-	}
-
-	// Remove Hero Section field group
-	if ( is_array( $field_groups ) ) {
-		$field_groups = array_filter( $field_groups, function( $field_group ) {
-			return ! isset( $field_group['key'] ) || 'group_hero_section' !== $field_group['key'];
-		} );
-		// Re-index array
-		$field_groups = array_values( $field_groups );
-	}
-
-	return $field_groups;
-}
-add_filter( 'acf/get_field_groups', 'brace_yourself_hide_hero_on_carousel_settings', 20, 2 );
 
 /**
  * Register ACF Options Page for global settings.
@@ -430,46 +353,3 @@ function brace_yourself_get_field( $field_name, $fallback = '', $post_id = null 
 	return $value !== false && $value !== null ? $value : $fallback;
 }
 
-/**
- * Additional filter: Hide Hero fields using prepare_field_group hook.
- * This runs earlier in the ACF process and modifies location rules.
- */
-function brace_yourself_prepare_hero_field_group( $field_group ) {
-	if ( ! isset( $field_group['key'] ) || 'group_hero_section' !== $field_group['key'] ) {
-		return $field_group;
-	}
-
-	if ( ! is_admin() ) {
-		return $field_group;
-	}
-
-	// Get post ID
-	$post_id = 0;
-	if ( isset( $_GET['post'] ) ) {
-		$post_id = absint( $_GET['post'] );
-	} elseif ( isset( $GLOBALS['post'] ) && $GLOBALS['post'] ) {
-		$post_id = $GLOBALS['post']->ID;
-	}
-
-	if ( ! $post_id ) {
-		return $field_group;
-	}
-
-	// Check if this is carousel settings page
-	$post_obj = get_post( $post_id );
-	if ( $post_obj && 'carousel-settings' === $post_obj->post_name ) {
-		// Make location rule impossible to match
-		$field_group['location'] = array(
-			array(
-				array(
-					'param'    => 'post_type',
-					'operator' => '==',
-					'value'    => 'nonexistent_post_type',
-				),
-			),
-		);
-	}
-
-	return $field_group;
-}
-add_filter( 'acf/prepare_field_group', 'brace_yourself_prepare_hero_field_group', 20 );

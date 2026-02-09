@@ -69,3 +69,8 @@ get_template_part( 'template-parts/components/background-carousel' );
 		);
 		?>
 	</nav><!-- #site-navigation -->
+
+	<?php
+	// Load homepage intro component
+	get_template_part( 'template-parts/components/homepage-intro' );
+	?>

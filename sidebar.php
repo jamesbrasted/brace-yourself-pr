@@ -5,6 +5,11 @@
  * @package Brace_Yourself
  */
 
+// Don't show sidebar on front page
+if ( is_front_page() ) {
+	return;
+}
+
 if ( ! is_active_sidebar( 'sidebar-1' ) ) {
 	return;
 }

@@ -29,8 +29,9 @@ if ( empty( $carousel_items ) ) {
 	return;
 }
 
-// Determine if homepage
-$is_homepage = is_front_page();
+// Determine if homepage (supports both static front page and posts index).
+// This ensures the carousel is unblurred on the main landing view.
+$is_homepage = is_front_page() || is_home();
 
 // Get slide duration (convert to milliseconds for CSS)
 $slide_duration = $carousel_data['slide_duration'] * 1000;

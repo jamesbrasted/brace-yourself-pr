@@ -5,6 +5,18 @@
  * @package Brace_Yourself
  */
 
+// Don't render footer content on front page or About page
+if ( is_front_page() || is_page( 'about' ) ) {
+	?>
+</div><!-- #page -->
+
+<?php wp_footer(); ?>
+
+</body>
+</html>
+	<?php
+	return;
+}
 ?>
 
 	<?php if ( has_nav_menu( 'footer' ) ) : ?>

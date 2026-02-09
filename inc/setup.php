@@ -149,18 +149,23 @@ function brace_yourself_limit_primary_menu_items( $items, $menu ) {
 add_filter( 'wp_get_nav_menu_items', 'brace_yourself_limit_primary_menu_items', 10, 2 );
 
 /**
- * Limit sidebar-1 (main widget area) to maximum of 3 widgets.
- * Extra widgets assigned in Appearance > Widgets are not displayed.
+ * Limit sidebar-1 (main widget area) to a maximum of 4 widgets on the front end.
+ * Extra widgets assigned in Appearance > Widgets are not displayed, but remain
+ * available in the Widgets admin instead of being moved to Inactive Widgets.
  *
- * @param array $value The sidebars_widgets option value.
- * @return array Filtered value with sidebar-1 limited to 3 items.
+ * This keeps the layout simple: up to four widgets, one per column
+ * in the sidebar grid.
+ *
+ * @param array $sidebars_widgets The sidebars_widgets array.
+ * @return array Filtered value with sidebar-1 limited to 4 items.
  */
-function brace_yourself_limit_sidebar_widgets( $value ) {
-	if ( ! is_array( $value ) || empty( $value['sidebar-1'] ) || ! is_array( $value['sidebar-1'] ) ) {
-		return $value;
+function brace_yourself_limit_sidebar_widgets( $sidebars_widgets ) {
+	if ( ! is_array( $sidebars_widgets ) || empty( $sidebars_widgets['sidebar-1'] ) || ! is_array( $sidebars_widgets['sidebar-1'] ) ) {
+		return $sidebars_widgets;
 	}
-	$value         = array_merge( array(), $value );
-	$value['sidebar-1'] = array_slice( $value['sidebar-1'], 0, 3 );
-	return $value;
+
+	$sidebars_widgets['sidebar-1'] = array_slice( $sidebars_widgets['sidebar-1'], 0, 4 );
+
+	return $sidebars_widgets;
 }
-add_filter( 'option_sidebars_widgets', 'brace_yourself_limit_sidebar_widgets' );
+add_filter( 'sidebars_widgets', 'brace_yourself_limit_sidebar_widgets' );
