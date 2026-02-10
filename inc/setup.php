@@ -84,35 +84,7 @@ function brace_yourself_content_width() {
 }
 add_action( 'after_setup_theme', 'brace_yourself_content_width', 0 );
 
-/**
- * Register widget areas.
- */
-function brace_yourself_widgets_init() {
-	register_sidebar(
-		array(
-			'name'          => esc_html__( 'Footer Left', 'brace-yourself' ),
-			'id'            => 'footer-left',
-			'description'   => esc_html__( 'Appears on the left side of the footer (e.g. address).', 'brace-yourself' ),
-			'before_widget' => '<div id="%1$s" class="widget %2$s">',
-			'after_widget'  => '</div>',
-			'before_title'  => '<h2 class="widget-title">',
-			'after_title'   => '</h2>',
-		)
-	);
-
-	register_sidebar(
-		array(
-			'name'          => esc_html__( 'Footer Right', 'brace-yourself' ),
-			'id'            => 'footer-right',
-			'description'   => esc_html__( 'Appears on the right side of the footer (e.g. email, social links).', 'brace-yourself' ),
-			'before_widget' => '<div id="%1$s" class="widget %2$s">',
-			'after_widget'  => '</div>',
-			'before_title'  => '<h2 class="widget-title">',
-			'after_title'   => '</h2>',
-		)
-	);
-}
-add_action( 'widgets_init', 'brace_yourself_widgets_init' );
+// No traditional widget areas are used; footer content is managed via ACF.
 
 /**
  * Add custom image sizes.
@@ -161,30 +133,7 @@ function brace_yourself_limit_primary_menu_items( $items, $menu ) {
 add_filter( 'wp_get_nav_menu_items', 'brace_yourself_limit_primary_menu_items', 10, 2 );
 
 /**
- * Limit footer widget areas to a maximum of 1 widget each.
- * Prevents saving more than 1 widget per footer area in the admin.
- *
- * @param array $value The sidebars_widgets option value being saved.
- * @return array Filtered value with footer-left and footer-right limited to 1 item each.
- */
-function brace_yourself_limit_footer_widgets_on_save( $value ) {
-	if ( ! is_array( $value ) ) {
-		return $value;
-	}
-
-	// Limit footer-left to 1 widget
-	if ( ! empty( $value['footer-left'] ) && is_array( $value['footer-left'] ) ) {
-		$value['footer-left'] = array_slice( $value['footer-left'], 0, 1 );
-	}
-
-	// Limit footer-right to 1 widget
-	if ( ! empty( $value['footer-right'] ) && is_array( $value['footer-right'] ) ) {
-		$value['footer-right'] = array_slice( $value['footer-right'], 0, 1 );
-	}
-
-	return $value;
-}
-add_filter( 'pre_update_option_sidebars_widgets', 'brace_yourself_limit_footer_widgets_on_save' );
+// No footer widget limiting needed; footer content is managed via ACF.
 
 /**
  * Disable block editor (Gutenberg) for the homepage.
@@ -210,55 +159,75 @@ function brace_yourself_disable_block_editor_for_homepage( $use_block_editor, $p
 add_filter( 'use_block_editor_for_post', 'brace_yourself_disable_block_editor_for_homepage', 10, 2 );
 
 /**
- * Check if we're currently editing the homepage.
+ * Check if we're currently editing an ACF-managed page (no content editor).
  *
- * @return bool True if editing homepage, false otherwise.
+ * Currently includes:
+ * - Static front page (homepage)
+ * - Carousel Settings page (ACF Free compatibility)
+ *
+ * @return bool True if editing an ACF-only page, false otherwise.
  */
-function brace_yourself_is_editing_homepage() {
+function brace_yourself_is_acf_only_page() {
+	$ids = array();
+
+	// Static front page.
 	$front_page_id = get_option( 'page_on_front' );
-	if ( ! $front_page_id ) {
+	if ( $front_page_id ) {
+		$ids[] = (int) $front_page_id;
+	}
+
+	// Carousel Settings page (created via ACF helper).
+	if ( function_exists( 'brace_yourself_get_carousel_settings_page_id' ) ) {
+		$carousel_page_id = brace_yourself_get_carousel_settings_page_id();
+		if ( $carousel_page_id ) {
+			$ids[] = (int) $carousel_page_id;
+		}
+	}
+
+	// Footer Settings page (created via ACF helper).
+	if ( function_exists( 'brace_yourself_get_footer_settings_page_id' ) ) {
+		$footer_page_id = brace_yourself_get_footer_settings_page_id();
+		if ( $footer_page_id ) {
+			$ids[] = (int) $footer_page_id;
+		}
+	}
+
+	if ( empty( $ids ) ) {
 		return false;
 	}
 
 	global $post;
-	
-	// Try multiple methods to get the post ID
+
+	// Try multiple methods to get the current post ID.
 	$post_id = 0;
-	
-	// Check GET parameters first (most reliable in admin context)
+
+	// GET parameters (most reliable in admin context).
 	if ( isset( $_GET['post'] ) ) {
 		$post_id = intval( $_GET['post'] );
-	}
-	// Check POST parameters (during save)
-	elseif ( isset( $_POST['post_ID'] ) ) {
+	} elseif ( isset( $_POST['post_ID'] ) ) {
+		// POST parameters (during save).
 		$post_id = intval( $_POST['post_ID'] );
-	}
-	// Check global post object
-	elseif ( isset( $post->ID ) && $post->ID ) {
+	} elseif ( isset( $post->ID ) && $post->ID ) {
+		// Global post object.
 		$post_id = $post->ID;
-	}
-	// Check screen object
-	else {
-		$screen = get_current_screen();
+	} else {
+		// Screen object fallback.
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
 		if ( $screen ) {
-			// Try to get post ID from screen
 			if ( isset( $screen->post ) && isset( $screen->post->ID ) ) {
 				$post_id = $screen->post->ID;
-			}
-			// Or check if we're on the edit page for this post type
-			elseif ( 'page' === $screen->post_type && 'post' === $screen->base ) {
-				// We're on a page edit screen, try to get ID from query vars
-				$post_id = isset( $_GET['post'] ) ? intval( $_GET['post'] ) : 0;
+			} elseif ( 'page' === $screen->post_type && 'post' === $screen->base && isset( $_GET['post'] ) ) {
+				$post_id = intval( $_GET['post'] );
 			}
 		}
 	}
-	
-	return ( $post_id > 0 && $post_id == $front_page_id );
+
+	return ( $post_id > 0 && in_array( (int) $post_id, $ids, true ) );
 }
 
 /**
- * Hide editor and other meta boxes for the homepage.
- * Homepage content is managed entirely via ACF fields.
+ * Hide editor and other meta boxes for ACF-only pages.
+ * Content is managed entirely via ACF fields.
  *
  * @param array $hidden Array of hidden meta boxes.
  * @param object $screen Current screen object.
@@ -269,7 +238,7 @@ function brace_yourself_hide_editor_for_homepage( $hidden, $screen ) {
 		return $hidden;
 	}
 
-	if ( ! brace_yourself_is_editing_homepage() ) {
+	if ( ! brace_yourself_is_acf_only_page() ) {
 		return $hidden;
 	}
 
@@ -286,10 +255,10 @@ function brace_yourself_hide_editor_for_homepage( $hidden, $screen ) {
 add_filter( 'hidden_meta_boxes', 'brace_yourself_hide_editor_for_homepage', 10, 2 );
 
 /**
- * Remove editor support for homepage to completely hide the content editor.
+ * Remove editor support for ACF-only pages to completely hide the content editor.
  */
 function brace_yourself_remove_editor_for_homepage() {
-	if ( ! brace_yourself_is_editing_homepage() ) {
+	if ( ! brace_yourself_is_acf_only_page() ) {
 		return;
 	}
 
@@ -309,7 +278,7 @@ add_action( 'admin_init', 'brace_yourself_remove_editor_for_homepage' );
  * Enqueue admin styles to hide editor elements on homepage.
  */
 function brace_yourself_hide_homepage_editor_styles() {
-	if ( ! brace_yourself_is_editing_homepage() ) {
+	if ( ! brace_yourself_is_acf_only_page() ) {
 		return;
 	}
 

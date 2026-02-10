@@ -53,12 +53,6 @@ The carousel fields are registered in code at `/inc/acf.php`. They appear automa
        - Used on: Mobile devices only
        - If not provided, desktop video will be used
 
-3. **Slide Duration** (`carousel_slide_duration`)
-   - Type: Number
-   - Default: 7 seconds
-   - Range: 3-15 seconds
-   - Purpose: How long each slide displays before fading to next
-
 ### Setting Up the Carousel
 
 1. **Go to WordPress Admin**
@@ -75,11 +69,7 @@ The carousel fields are registered in code at `/inc/acf.php`. They appear automa
    - Optionally upload **Mobile Video** (for better mobile performance)
    - Repeat for additional videos
 
-4. **Set Slide Duration**
-   - Enter desired duration (default: 7 seconds)
-   - This controls how long each slide displays
-
-5. **Save Changes**
+4. **Save Changes**
    - Click "Update" or "Publish"
    - Carousel will appear on all pages immediately
 
@@ -223,8 +213,9 @@ Edit CSS in `/assets/css/main.css`:
 
 ### Changing Animation Duration
 
-1. Edit ACF field `carousel_slide_duration`
-2. Or modify CSS variable `--duration-carousel`
+The carousel currently uses a fixed, code-defined slide duration (7 seconds)
+for stability and consistent transitions. To change this, you would need to
+adjust the timing logic in `inc/carousel.php` and the related CSS variables.
 
 ### Adding More Animation Effects
 

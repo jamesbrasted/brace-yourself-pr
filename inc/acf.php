@@ -34,7 +34,7 @@ function brace_yourself_get_front_page_id() {
 /**
  * Get carousel settings page ID.
  * Creates the page if it doesn't exist (for ACF Free compatibility).
- * 
+ *
  * NOTE: This page is automatically excluded from navigation menus via
  * brace_yourself_exclude_carousel_settings_from_menus() filter.
  * It should never appear in site navigation as it's only for admin use.
@@ -65,6 +65,42 @@ function brace_yourself_get_carousel_settings_page_id() {
 		update_post_meta( $page_id, '_exclude_from_search', '1' );
 	}
 	
+	return $page_id ? $page_id : false;
+}
+
+/**
+ * Get footer settings page ID.
+ * Creates the page if it doesn't exist (for ACF Free compatibility).
+ *
+ * This page is for configuring footer columns (address, email, social links, etc.)
+ * and should not appear in site navigation.
+ *
+ * @return int|false Page ID or false on failure.
+ */
+function brace_yourself_get_footer_settings_page_id() {
+	// Check if page already exists.
+	$page = get_page_by_path( 'footer-settings', OBJECT, 'page' );
+
+	if ( $page ) {
+		return $page->ID;
+	}
+
+	// Create the page if it doesn't exist.
+	$page_data = array(
+		'post_title'   => __( 'Footer Settings', 'brace-yourself' ),
+		'post_name'    => 'footer-settings',
+		'post_status'  => 'publish',
+		'post_type'    => 'page',
+		'post_content' => __( 'This page is used to configure the footer columns. Edit the fields below to manage footer content.', 'brace-yourself' ),
+	);
+
+	$page_id = wp_insert_post( $page_data );
+
+	// Mark page to exclude from search (optional, but helpful).
+	if ( $page_id ) {
+		update_post_meta( $page_id, '_exclude_from_search', '1' );
+	}
+
 	return $page_id ? $page_id : false;
 }
 
@@ -195,19 +231,6 @@ function brace_yourself_get_carousel_fields() {
 		);
 	}
 
-	// Slide duration (available in both)
-	$fields[] = array(
-		'key'               => 'field_carousel_slide_duration',
-		'label'             => 'Slide Duration (seconds)',
-		'name'              => 'carousel_slide_duration',
-		'type'              => 'number',
-		'instructions'      => 'How long each slide displays (default: 7 seconds)',
-		'default_value'     => 7,
-		'min'               => 3,
-		'max'               => 15,
-		'step'              => 1,
-	);
-
 	return $fields;
 }
 
@@ -263,6 +286,79 @@ function brace_yourself_register_acf_field_groups() {
 			'instruction_placement' => 'label',
 		)
 	);
+
+	// Footer Settings Field Group
+	// Location: Footer Settings page only (ACF Free settings page).
+	$footer_page_id = brace_yourself_get_footer_settings_page_id();
+	if ( $footer_page_id ) {
+		acf_add_local_field_group(
+			array(
+				'key'                   => 'group_footer_settings',
+				'title'                 => 'Footer Settings',
+				'fields'                => array(
+					array(
+						'key'               => 'field_footer_column_1',
+						'label'             => 'Footer Column 1',
+						'name'              => 'footer_column_1',
+						'type'              => 'wysiwyg',
+						'instructions'      => 'Content for the first footer column (typically address). You can include links.',
+						'required'          => 0,
+						'tabs'              => 'all',
+						'toolbar'           => 'basic',
+						'media_upload'      => 0,
+					),
+					array(
+						'key'               => 'field_footer_column_2',
+						'label'             => 'Footer Column 2',
+						'name'              => 'footer_column_2',
+						'type'              => 'wysiwyg',
+						'instructions'      => 'Content for the second footer column (e.g. email, social links). You can include links.',
+						'required'          => 0,
+						'tabs'              => 'all',
+						'toolbar'           => 'basic',
+						'media_upload'      => 0,
+					),
+					array(
+						'key'               => 'field_footer_column_3',
+						'label'             => 'Footer Column 3',
+						'name'              => 'footer_column_3',
+						'type'              => 'wysiwyg',
+						'instructions'      => 'Optional third footer column.',
+						'required'          => 0,
+						'tabs'              => 'all',
+						'toolbar'           => 'basic',
+						'media_upload'      => 0,
+					),
+					array(
+						'key'               => 'field_footer_column_4',
+						'label'             => 'Footer Column 4',
+						'name'              => 'footer_column_4',
+						'type'              => 'wysiwyg',
+						'instructions'      => 'Optional fourth footer column.',
+						'required'          => 0,
+						'tabs'              => 'all',
+						'toolbar'           => 'basic',
+						'media_upload'      => 0,
+					),
+				),
+				'location'              => array(
+					array(
+						array(
+							'param'    => 'page',
+							'operator' => '==',
+							'value'    => $footer_page_id,
+						),
+					),
+				),
+				'active'                => 1,
+				'menu_order'            => 10,
+				'position'              => 'normal',
+				'style'                 => 'default',
+				'label_placement'       => 'top',
+				'instruction_placement' => 'label',
+			)
+		);
+	}
 
 	// Homepage Intro Field Group
 	// Location: Front page (Homepage page) only

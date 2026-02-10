@@ -688,41 +688,56 @@ a:focus-visible {
 }
 
 .site-footer__inner {
-	display: flex;
-	justify-content: space-between;
-	align-items: flex-end;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
 	gap: var(--space-600);
-	flex-wrap: wrap;
+	align-items: flex-end;
 	text-align: left;
 }
 
-.site-footer__left {
+.site-footer__column {
 	text-align: left;
 }
 
-.site-footer__right {
+/* Footer columns: map to nav-style positions */
+.site-footer__column--1 {
+	grid-column: 1;
+	justify-self: start;
+	text-align: left;
+}
+
+.site-footer__column--2 {
+	grid-column: 2;
+	justify-self: center;
+	text-align: left;
+}
+
+.site-footer__column--3 {
+	grid-column: 3;
+	justify-self: center;
+	text-align: left;
+}
+
+.site-footer__column--4 {
+	grid-column: 4;
+	justify-self: end;
 	text-align: right;
-	margin-left: auto;
-}
-
-.site-footer__left .widget,
-.site-footer__right .widget {
-	margin: 0;
 }
 
 @media (max-width: 767px) {
 	.site-footer__inner {
-		flex-direction: column;
+		grid-template-columns: 1fr;
 		align-items: center;
-	}
-
-	.site-footer__left,
-	.site-footer__right {
 		text-align: center;
 	}
 
-	.site-footer__right {
-		margin-left: 0;
+	.site-footer__column--1,
+	.site-footer__column--2,
+	.site-footer__column--3,
+	.site-footer__column--4 {
+		grid-column: auto;
+		justify-self: center;
+		text-align: center;
 	}
 }
 
@@ -750,12 +765,12 @@ a:focus-visible {
 	color: var(--color-text);
 }
 
-/* Footer widget links: same bracket + circle treatment as primary nav */
-.site-footer__inner .widget a {
+/* Footer column links: same bracket + circle treatment as primary nav */
+.site-footer__inner .site-footer__column a {
 	display: inline-flex;
 	align-items: center;
 	position: relative;
-	padding: var(--space-300) 0 var(--space-300) var(--space-800);
+	padding: var(--space-100) 0 var(--space-100) var(--space-800);
 	color: var(--color-text);
 	text-decoration: none;
 	font-family: var(--font-sans);
@@ -768,7 +783,7 @@ a:focus-visible {
 }
 
 /* Opening bracket */
-.site-footer__inner .widget a::before {
+.site-footer__inner .site-footer__column a::before {
 	content: "[";
 	position: absolute;
 	left: 0;
@@ -781,7 +796,7 @@ a:focus-visible {
 }
 
 /* Closing bracket */
-.site-footer__inner .widget a::after {
+.site-footer__inner .site-footer__column a::after {
 	content: "]";
 	position: absolute;
 	left: var(--scale-600);
@@ -794,7 +809,7 @@ a:focus-visible {
 }
 
 /* Circle on hover - using radial-gradient sized to match nav circle exactly */
-.site-footer__inner .widget a:hover {
+.site-footer__inner .site-footer__column a:hover {
 	background-image: radial-gradient(circle at center, currentColor 0, currentColor calc(var(--scale-200) / 2), transparent calc(var(--scale-200) / 2));
 }
 

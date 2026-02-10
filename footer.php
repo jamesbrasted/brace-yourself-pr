@@ -19,7 +19,28 @@ if ( is_front_page() ) {
 }
 ?>
 
-	<?php if ( has_nav_menu( 'footer' ) || is_active_sidebar( 'footer-left' ) || is_active_sidebar( 'footer-right' ) ) : ?>
+	<?php
+	// Determine if footer has any ACF-driven columns.
+	$footer_page_id = function_exists( 'brace_yourself_get_footer_settings_page_id' ) ? brace_yourself_get_footer_settings_page_id() : 0;
+	$footer_columns = array();
+
+	if ( $footer_page_id ) {
+		for ( $i = 1; $i <= 4; $i++ ) {
+			$content = get_field( 'footer_column_' . $i, $footer_page_id );
+			$footer_columns[ $i ] = $content;
+		}
+	}
+
+	$has_footer_columns = false;
+	foreach ( $footer_columns as $content ) {
+		if ( $content ) {
+			$has_footer_columns = true;
+			break;
+		}
+	}
+	?>
+
+	<?php if ( has_nav_menu( 'footer' ) || $has_footer_columns ) : ?>
 	<footer id="colophon" class="site-footer">
 		<?php if ( has_nav_menu( 'footer' ) ) : ?>
 			<?php
@@ -35,18 +56,15 @@ if ( is_front_page() ) {
 			?>
 		<?php endif; ?>
 
-		<?php if ( is_active_sidebar( 'footer-left' ) || is_active_sidebar( 'footer-right' ) ) : ?>
+		<?php if ( $has_footer_columns ) : ?>
 			<div class="site-footer__inner">
-				<?php if ( is_active_sidebar( 'footer-left' ) ) : ?>
-					<div class="site-footer__left">
-						<?php dynamic_sidebar( 'footer-left' ); ?>
-					</div>
-				<?php endif; ?>
-				<?php if ( is_active_sidebar( 'footer-right' ) ) : ?>
-					<div class="site-footer__right">
-						<?php dynamic_sidebar( 'footer-right' ); ?>
-					</div>
-				<?php endif; ?>
+				<?php foreach ( $footer_columns as $i => $column_content ) : ?>
+					<?php if ( $column_content ) : ?>
+						<div class="site-footer__column site-footer__column--<?php echo esc_attr( $i ); ?>">
+							<?php echo wp_kses_post( $column_content ); ?>
+						</div>
+					<?php endif; ?>
+				<?php endforeach; ?>
 			</div>
 		<?php endif; ?>
 	</footer><!-- #colophon -->

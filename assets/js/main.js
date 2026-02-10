@@ -90,15 +90,20 @@
 			videos.forEach(video => {
 				const opacity = parseFloat(window.getComputedStyle(video).opacity);
 
-				if (opacity < 0.1 && !video.paused) {
+				if (opacity < 0.05 && !video.paused) {
+					// Fully (or almost fully) hidden: ensure video is paused to save resources.
 					video.pause();
-				} else if (opacity > 0.9 && video.paused && video.readyState >= 2) {
+				} else if (opacity > 0.15 && video.paused && video.readyState >= 2) {
+					// Start playback very early in the fade-in so video is
+					// already running by the time the slide is noticeably visible.
 					video.play().catch(() => {});
 				}
 			});
 		};
 
-		setInterval(checkVisibility, 1000);
+		// Check a bit more frequently so playback syncs more closely
+		// with the visual fade-in, without a noticeable perf impact.
+		setInterval(checkVisibility, 250);
 	}
 
 	/**

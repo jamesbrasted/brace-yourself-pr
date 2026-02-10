@@ -82,7 +82,9 @@ function brace_yourself_carousel_styles() {
 	}
 
 	$ivp  = 100 / $total_items; // Item visibility percent of total cycle
-	$fade = min( 15, $ivp / 3 ); // Crossfade duration as % of cycle
+	// Crossfade duration as % of cycle.
+	// Even shorter for a very quick transition, while keeping a small overlap.
+	$fade = min( 3, $ivp / 15 );
 
 	// Format helper: clamp to 0-100 and format with 2 decimal places
 	$fmt = function( $val ) {
@@ -169,14 +171,11 @@ function brace_yourself_get_carousel_data() {
 	// Try ACF Pro options page first
 	$images = get_field( 'carousel_images', 'option' );
 	$videos = get_field( 'carousel_videos', 'option' );
-	$duration = get_field( 'carousel_slide_duration', 'option' );
 
 	// If no data from options page, try settings page (ACF Free)
 	if ( empty( $images ) && empty( $videos ) ) {
 		$settings_page_id = brace_yourself_get_carousel_settings_page_id();
 		if ( $settings_page_id ) {
-			$duration = get_field( 'carousel_slide_duration', $settings_page_id );
-			
 			// Check if images is gallery (Pro) or separate image fields (Free)
 			$images_raw = get_field( 'carousel_images', $settings_page_id );
 			if ( $images_raw && is_array( $images_raw ) && isset( $images_raw[0]['url'] ) ) {
@@ -258,11 +257,9 @@ function brace_yourself_get_carousel_data() {
 	if ( ! is_array( $videos ) ) {
 		$videos = array();
 	}
-	// Validate and sanitize duration (minimum 3 seconds, maximum 30 seconds)
-	if ( ! is_numeric( $duration ) || $duration < 3 || $duration > 30 ) {
-		$duration = 7;
-	}
-	$duration = absint( $duration );
+	// Force a fixed duration of 7 seconds for stability.
+	// This prevents extremely long cycles that would slow transitions.
+	$duration = 7;
 
 	return array(
 		'images'        => $images,

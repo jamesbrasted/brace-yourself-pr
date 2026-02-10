@@ -10,7 +10,6 @@
  * - carousel_videos (repeater) - Video items with desktop/mobile variants
  *   - video_desktop (file) - Desktop video file
  *   - video_mobile (file, optional) - Mobile video file
- * - carousel_slide_duration (number) - Slide duration in seconds (default: 7)
  *
  * @package Brace_Yourself
  */
