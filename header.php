@@ -24,6 +24,10 @@
 get_template_part( 'template-parts/components/background-carousel' );
 ?>
 
+<?php if ( is_front_page() ) : ?>
+	<div class="homepage-cursor-mobile" aria-hidden="true"></div>
+<?php endif; ?>
+
 <div id="page" class="site">
 	<a class="skip-link" href="#primary"><?php esc_html_e( 'Skip to content', 'brace-yourself' ); ?></a>
 
