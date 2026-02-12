@@ -63,14 +63,13 @@ Quick reference for the Brace Yourself theme design system.
 
 ### Semantic Typography Tokens
 
+- `--font-heading-xl`: `var(--text-4xl)` - Display / hero headings
+- `--font-heading-l`: `var(--text-3xl)` - Primary page titles
+- `--font-heading-m`: `var(--text-2xl)` - Section headings
+- `--font-heading-s`: `var(--text-xl)` - Subsection headings
+- `--font-body-l`: `var(--text-lg)` - Large body text / lead
 - `--font-body`: `var(--text-base)` - Default body text
 - `--font-caption`: `var(--text-sm)` - Captions, meta text
-- `--font-h1`: `var(--text-3xl)` - Page titles
-- `--font-h2`: `var(--text-2xl)` - Section headings
-- `--font-h3`: `var(--text-xl)` - Subsection headings
-- `--font-h4`: `var(--text-lg)` - Minor headings
-- `--font-h5`: `var(--text-base)` - Small headings
-- `--font-h6`: `var(--text-sm)` - Smallest headings
 
 ## Color System
 
@@ -134,11 +133,14 @@ Quick reference for the Brace Yourself theme design system.
 
 ## Font Families
 
-- `--font-sans`: System font stack
+- `--font-family-body`: Primary sans-serif stack for body text
   ```css
-  system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif
+  'Pilat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif
   ```
-- `--font-heading: var(--font-sans)` - Headings use same stack
+- `--font-family-heading`: Heading stack (prefers wide display where available)
+  ```css
+  'Pilat Wide', 'Pilat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif
+  ```
 
 ## Usage Guidelines
 
