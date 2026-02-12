@@ -169,14 +169,14 @@ body {
 
 	/* Headings */
 	--font-heading-xl: var(--text-4xl); /* Display / hero */
-	--font-heading-l: var(--text-3xl);  /* Primary page titles */
-	--font-heading-m: var(--text-2xl);  /* Section headings */
-	--font-heading-s: var(--text-xl);   /* Sub-section headings */
+	--font-heading-lg: var(--text-3xl);  /* Primary page titles */
+	--font-heading-md: var(--text-2xl);  /* Section headings */
+	--font-heading-sm: var(--text-xl);   /* Sub-section headings */
 
 	/* Body text */
-	--font-body-l: var(--text-lg);      /* Large body text / lead */
+	--font-body-lg: var(--text-lg);      /* Large body text / lead */
 	--font-body: var(--text-base);      /* Default body text */
-	--font-caption: var(--text-sm);     /* Captions / meta */
+	--font-caption: var(--text-base);     /* Captions / meta */
 
 	/* ========================================
 	   LINE HEIGHT SYSTEM
@@ -194,7 +194,7 @@ body {
 	--letter-spacing-tight: -0.02em;
 	--letter-spacing-normal: 0;
 	--letter-spacing-wide: 0.02em;
-	--letter-spacing-wider: 0.05em;
+	--letter-spacing-wider: 0.04em;
 
 	/* ========================================
 	   FONT FAMILIES
@@ -266,20 +266,20 @@ h6 {
 }
 
 h1 {
-	font-size: var(--font-heading-l);
+	font-size: var(--font-heading-lg);
 	line-height: var(--line-height-tight);
 }
 
 h2 {
-	font-size: var(--font-heading-m);
+	font-size: var(--font-heading-md);
 }
 
 h3 {
-	font-size: var(--font-heading-s);
+	font-size: var(--font-heading-sm);
 }
 
 h4 {
-	font-size: var(--font-body-l);
+	font-size: var(--font-body-lg);
 }
 
 h5 {
@@ -288,6 +288,67 @@ h5 {
 
 h6 {
 	font-size: var(--font-caption);
+}
+
+/* ----------------------------------------
+   TYPOGRAPHY UTILITIES
+   ---------------------------------------- */
+
+/* Font size utilities (independent of element type) */
+.text-heading-xl {
+	font-size: var(--font-heading-xl);
+	letter-spacing: var(--letter-spacing-normal);
+	line-height: var(--line-height-tight);
+	text-transform: uppercase;
+}
+
+.text-heading-lg {
+	font-size: var(--font-heading-lg);
+	letter-spacing: var(--letter-spacing-normal);
+	line-height: var(--line-height-tight);
+	text-transform: uppercase;
+}
+
+.text-heading-md {
+	font-size: var(--font-heading-md);
+	letter-spacing: var(--letter-spacing-normal);
+	line-height: var(--line-height-tight);
+	text-transform: uppercase;
+}
+
+.text-heading-sm {
+	font-size: var(--font-heading-sm);
+	letter-spacing: var(--letter-spacing-normal);
+	line-height: var(--line-height-tight);
+	text-transform: uppercase;
+}
+
+.text-body-lg {
+	font-size: var(--font-body-lg);
+	letter-spacing: var(--letter-spacing-normal);
+	line-height: var(--line-height-base);
+}
+
+.text-body {
+	font-size: var(--font-body);
+	letter-spacing: var(--letter-spacing-normal);
+	line-height: var(--line-height-base);
+}
+
+.text-caption {
+	font-size: var(--font-caption);
+	letter-spacing: var(--letter-spacing-wide);
+	line-height: var(--line-height-relaxed);
+	text-transform: uppercase;
+}
+
+/* Font family utilities */
+.font-heading {
+	font-family: var(--font-family-heading);
+}
+
+.font-body {
+	font-family: var(--font-family-body);
 }
 
 p {
@@ -567,7 +628,6 @@ a:focus-visible {
 	text-decoration: none;
 	position: relative;
 	padding: var(--space-500) 0 var(--space-500) var(--space-800);
-	font-family: var(--font-family-body);
 }
 
 /* Opening bracket */
@@ -629,6 +689,9 @@ a:focus-visible {
 @media (min-width: 768px) {
 	.main-navigation {
 		padding: 0 var(--space-600);
+	}
+	.site-main {
+		padding: var(--space-600);
 	}
 	.site-branding {
 		padding: var(--space-600) 0 0;
@@ -732,7 +795,7 @@ a:focus-visible {
 .site-footer__inner {
 	display: grid;
 	grid-template-columns: repeat(4, 1fr);
-	gap: var(--space-600);
+	gap: var(--space-400);
 	align-items: flex-end;
 	text-align: left;
 }
@@ -768,6 +831,7 @@ a:focus-visible {
 
 @media (max-width: 767px) {
 	.site-footer__inner {
+		gap: var(--space-400);
 		grid-template-columns: 1fr;
 		align-items: center;
 		text-align: center;
@@ -812,10 +876,10 @@ a:focus-visible {
 	display: inline-flex;
 	align-items: center;
 	position: relative;
-	padding: var(--space-100) 0 var(--space-100) var(--space-800);
+	/* padding: var(--space-100) 0 var(--space-100) var(--space-800); */
+	padding-left: var(--space-800);
 	color: var(--color-text);
 	text-decoration: none;
-	font-family: var(--font-family-body);
 	background: transparent;
 	background-repeat: no-repeat;
 	background-position: var(--scale-400) 50%;
@@ -1114,9 +1178,6 @@ a:focus-visible {
 
 .homepage-intro__text {
 	margin: 0;
-	font-size: var(--font-body);
-	line-height: var(--line-height-base);
-	color: var(--color-text);
 	text-align: center;
 	pointer-events: auto; /* Re-enable pointer events for text */
 	/* Default: full-width span on small/tablet screens */
@@ -1129,10 +1190,6 @@ a:focus-visible {
 		padding: var(--space-600) var(--space-600) var(--space-800);
 		gap: var(--space-600);
 	}
-}
-
-/* Desktop: intro text spans middle seven columns of 12-column grid */
-@media (min-width: 1024px) {
 	.homepage-intro__text {
 		/* Span the middle 7 columns (columns 3-9) of a 12-column grid */
 		grid-column: 3 / span 7;
@@ -1163,8 +1220,6 @@ a:focus-visible {
 
 .about-centered__content {
 	text-align: center;
-	font-size: var(--text-xl); /* Mobile: XL */
-	line-height: var(--line-height-tight);
 }
 
 .about-centered__content p {
@@ -1179,17 +1234,6 @@ a:focus-visible {
 @media (min-width: 768px) {
 	.site-main--about-centered {
 		padding: var(--space-600);
-	}
-	
-	.about-centered__content {
-		font-size: var(--text-2xl);
-	}
-}
-
-/* Desktop: 3XL */
-@media (min-width: 1024px) {
-	.about-centered__content {
-		font-size: var(--text-3xl);
 	}
 }
 
@@ -1209,11 +1253,12 @@ a:focus-visible {
 /* Desktop: use new cursor SVG, hotspot at top-center (44, 0) of 88px width */
 @media (min-width: 768px) {
 	/* Force custom cursor on all homepage elements */
-	body.home {
-		cursor: var(--homepage-cursor-desktop) 44 64, auto;
+	body.home,
+	body.home a {
+		cursor: var(--homepage-cursor-desktop) 44 0, auto;
 	}
 	body.home .primary-menu a {
-		cursor: pointer;
+		cursor: var(--homepage-cursor-desktop) 44 0, pointer;
 	}
 }
 

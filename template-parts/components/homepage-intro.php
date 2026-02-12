@@ -37,6 +37,6 @@ if ( empty( $intro_text ) ) {
 
 <div class="homepage-intro">
 	<div class="homepage-intro__container">
-		<p class="homepage-intro__text"><?php echo esc_html( $intro_text ); ?></p>
+		<p class="homepage-intro__text text-caption"><?php echo esc_html( $intro_text ); ?></p>
 	</div>
 </div>

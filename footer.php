@@ -41,7 +41,7 @@ if ( is_front_page() ) {
 	?>
 
 	<?php if ( has_nav_menu( 'footer' ) || $has_footer_columns ) : ?>
-	<footer id="colophon" class="site-footer">
+	<footer id="colophon" class="site-footer text-caption">
 		<?php if ( has_nav_menu( 'footer' ) ) : ?>
 			<?php
 			wp_nav_menu(

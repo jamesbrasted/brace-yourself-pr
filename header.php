@@ -61,7 +61,7 @@ get_template_part( 'template-parts/components/background-carousel' );
 
 	</header><!-- #masthead -->
 
-	<nav id="site-navigation" class="main-navigation">
+	<nav id="site-navigation" class="main-navigation text-caption">
 		<?php
 		wp_nav_menu(
 			array(
