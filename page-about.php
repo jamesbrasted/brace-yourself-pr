@@ -20,7 +20,7 @@ get_header();
 
 			<article id="post-<?php the_ID(); ?>" <?php post_class( 'about-centered' ); ?>>
 				<div class="about-centered__inner">
-					<div class="about-centered__content flow text-heading-lg">
+					<div class="about-centered__content flow text-heading-xl">
 						<?php
 						the_content();
 
