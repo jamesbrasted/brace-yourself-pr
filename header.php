@@ -61,7 +61,8 @@ get_template_part( 'template-parts/components/background-carousel' );
 
 	</header><!-- #masthead -->
 
-	<nav id="site-navigation" class="main-navigation text-caption">
+	<?php if ( has_nav_menu( 'primary' ) ) : ?>
+	<nav id="site-navigation" class="main-navigation text-caption" aria-label="<?php esc_attr_e( 'Main navigation', 'brace-yourself' ); ?>">
 		<?php
 		wp_nav_menu(
 			array(
@@ -73,6 +74,7 @@ get_template_part( 'template-parts/components/background-carousel' );
 		);
 		?>
 	</nav><!-- #site-navigation -->
+	<?php endif; ?>
 
 	<?php
 	// Load homepage intro component

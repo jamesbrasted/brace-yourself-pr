@@ -111,8 +111,8 @@ function brace_yourself_image_sizes() {
 add_action( 'after_setup_theme', 'brace_yourself_image_sizes' );
 
 /**
- * Limit primary navigation menu to maximum of 4 items.
- * This ensures the menu stays clean and manageable for 2-4 items.
+ * Limit primary navigation menu to maximum of 3 items.
+ * This ensures the menu stays clean and manageable for 2-3 items.
  *
  * @param array $items An array of menu item objects.
  * @param object $menu The menu object.
@@ -123,8 +123,8 @@ function brace_yourself_limit_primary_menu_items( $items, $menu ) {
 	if ( isset( $menu->term_id ) ) {
 		$locations = get_nav_menu_locations();
 		if ( isset( $locations['primary'] ) && $locations['primary'] === $menu->term_id ) {
-			// Limit to first 4 items
-			return array_slice( $items, 0, 4 );
+			// Limit to first 3 items
+			return array_slice( $items, 0, 3 );
 		}
 	}
 	

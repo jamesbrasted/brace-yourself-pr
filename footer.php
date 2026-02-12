@@ -43,6 +43,7 @@ if ( is_front_page() ) {
 	<?php if ( has_nav_menu( 'footer' ) || $has_footer_columns ) : ?>
 	<footer id="colophon" class="site-footer text-caption">
 		<?php if ( has_nav_menu( 'footer' ) ) : ?>
+			<nav aria-label="<?php esc_attr_e( 'Footer navigation', 'brace-yourself' ); ?>">
 			<?php
 			wp_nav_menu(
 				array(
@@ -54,6 +55,7 @@ if ( is_front_page() ) {
 				)
 			);
 			?>
+			</nav>
 		<?php endif; ?>
 
 		<?php if ( $has_footer_columns ) : ?>

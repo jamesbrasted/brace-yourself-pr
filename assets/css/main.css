@@ -329,6 +329,50 @@ h6 {
 	text-transform: uppercase;
 }
 
+/* Responsive: h1→.text-heading-xl, h2→.text-heading-lg, h3→.text-heading-md, h4→.text-heading-sm at each breakpoint */
+@media (max-width: 1023px) {
+	h1 {
+		font-size: var(--font-heading-md);
+	}
+
+	h2 {
+		font-size: var(--font-heading-sm);
+	}
+
+	h3 {
+		font-size: var(--font-body-lg);
+	}
+}
+
+@media (max-width: 767px) {
+	h1 {
+		font-size: var(--font-heading-sm);
+	}
+
+	h2 {
+		font-size: var(--font-body-lg);
+	}
+
+	h4 {
+		font-size: var(--font-body);
+	}
+
+	h5,
+	h6 {
+		line-height: var(--line-height-relaxed);
+	}
+}
+
+@media (max-width: 375px) {
+	h1 {
+		font-size: var(--font-body-lg);
+	}
+
+	h2 {
+		font-size: var(--font-body);
+	}
+}
+
 /* ----------------------------------------
    TYPOGRAPHY UTILITIES
    ---------------------------------------- */
@@ -395,6 +439,21 @@ h6 {
 	text-transform: uppercase;
 }
 
+/* Responsive scale: 1023px (tablet), 767px (mobile), 375px (small mobile) */
+@media (max-width: 1023px) {
+	.text-heading-xl {
+		font-size: var(--font-heading-md);
+	}
+
+	.text-heading-lg {
+		font-size: var(--font-heading-sm);
+	}
+
+	.text-heading-md {
+		font-size: var(--font-body-lg);
+	}
+}
+
 @media (max-width: 767px) {
 	.text-heading-xl {
 		font-size: var(--font-heading-sm);
@@ -404,20 +463,22 @@ h6 {
 		font-size: var(--font-body-lg);
 	}
 
-	.text-heading-md {
-		font-size: var(--font-body-lg);
-	}
-
 	.text-heading-sm {
 		font-size: var(--font-body);
 	}
 
-	.text-body-lg {
+	.text-body-lg, .text-body {
 		line-height: var(--line-height-relaxed);
 	}
+}
 
-	.text-body {
-		line-height: var(--line-height-relaxed);
+@media (max-width: 375px) {
+	.text-heading-xl {
+		font-size: var(--font-body-lg);
+	}
+
+	.text-heading-lg {
+		font-size: var(--font-body);
 	}
 }
 
@@ -655,40 +716,41 @@ a:focus-visible {
 .primary-menu {
 	list-style: none;
 	display: grid;
-	grid-template-columns: repeat(4, 1fr);
+	grid-template-columns: repeat(3, 1fr);
 	gap: var(--space-400);
 	width: 100%;
 }
 
-/* Mobile: 2 items - space-between (first at start, second at end) */
+/* 1 item - centered */
+.primary-menu > li:first-child:nth-last-child(1) {
+	grid-column: 1 / -1;
+	justify-self: center;
+}
+
+/* 2 items - space-between (first at start, second at end) */
 .primary-menu > li:first-child:nth-last-child(2) {
 	grid-column: 1;
 	justify-self: start;
 }
 
 .primary-menu > li:first-child:nth-last-child(2) ~ li {
-	grid-column: 4;
+	grid-column: 3;
 	justify-self: end;
 }
 
-/* 4 items - first and last at edges, middle two centered */
-.primary-menu > li:first-child:nth-last-child(4) {
+/* 3 items - first at start, middle centered, last at end */
+.primary-menu > li:first-child:nth-last-child(3) {
 	grid-column: 1;
 	justify-self: start;
 }
 
-.primary-menu > li:first-child:nth-last-child(4) ~ li:nth-child(2) {
+.primary-menu > li:first-child:nth-last-child(3) ~ li:nth-child(2) {
 	grid-column: 2;
 	justify-self: center;
 }
 
-.primary-menu > li:first-child:nth-last-child(4) ~ li:nth-child(3) {
+.primary-menu > li:first-child:nth-last-child(3) ~ li:nth-child(3) {
 	grid-column: 3;
-	justify-self: center;
-}
-
-.primary-menu > li:first-child:nth-last-child(4) ~ li:nth-child(4) {
-	grid-column: 4;
 	justify-self: end;
 }
 
@@ -811,7 +873,7 @@ a:focus-visible {
 
 	.primary-menu {
 		display: grid;
-		grid-template-columns: repeat(4, 1fr);
+		grid-template-columns: repeat(3, 1fr);
 		gap: var(--space-700);
 		width: 100%;
 	}
@@ -823,44 +885,7 @@ a:focus-visible {
 	}
 
 	.primary-menu > li:first-child:nth-last-child(2) ~ li {
-		grid-column: 4;
-		justify-self: end;
-	}
-
-	/* Desktop: 3 items - middle one centered across columns 2–3 */
-	.primary-menu > li:first-child:nth-last-child(3) {
-		grid-column: 1;
-		justify-self: start;
-	}
-
-	.primary-menu > li:first-child:nth-last-child(3) ~ li:nth-child(2) {
-		grid-column: 2 / span 2;
-		justify-self: center;
-	}
-
-	.primary-menu > li:first-child:nth-last-child(3) ~ li:nth-child(3) {
-		grid-column: 4;
-		justify-self: end;
-	}
-
-	/* Desktop: 4 items - first and last at edges, middle two centered */
-	.primary-menu > li:first-child:nth-last-child(4) {
-		grid-column: 1;
-		justify-self: start;
-	}
-
-	.primary-menu > li:first-child:nth-last-child(4) ~ li:nth-child(2) {
-		grid-column: 2;
-		justify-self: center;
-	}
-
-	.primary-menu > li:first-child:nth-last-child(4) ~ li:nth-child(3) {
 		grid-column: 3;
-		justify-self: center;
-	}
-
-	.primary-menu > li:first-child:nth-last-child(4) ~ li:nth-child(4) {
-		grid-column: 4;
 		justify-self: end;
 	}
 }
