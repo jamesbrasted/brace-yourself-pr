@@ -1399,8 +1399,8 @@ a.artist__name {
 	height: auto;
 	min-width: 0;
 	min-height: 0;
-	max-width: min(90vw, 560px);
-	max-height: min(90vh, 560px);
+	max-width: min(90vw, calc(6 * var(--scale-1000)));
+	max-height: min(90vh, calc(6 * var(--scale-1000)));
 	object-fit: contain;
 	opacity: 1;
 }
@@ -1409,9 +1409,7 @@ a.artist__name {
 	.roster {
 		gap: var(--space-100);
 	}
-}
 
-@media (hover: hover) and (pointer: fine) {
 	.artist__item {
 		z-index: 0;
 	}
@@ -1421,18 +1419,71 @@ a.artist__name {
 	}
 }
 
-@media (hover: none) {
-	.artist__preview {
-		transition-duration: 0.3s;
+@media (max-width: 767px) {
+	.roster {
+		gap: var(--space-1000);
 	}
 
-	/* Vertically centre preview on artist name and use a slightly smaller size */
+	.artist__name,
+	.artist__subtitle {
+		display: block;
+		width: 100%;
+	}
+
+	.artist__subtitle {
+		font-size: var(--text-sm);
+	}
+
+	.artist__preview {
+		transition: opacity 0.35s ease-out, transform 0.35s ease-out;
+	}
+
+	.artist__item {
+		gap: var(--space-100);
+	}
+
+	/* Start position for animate-in: from left/right/bottom depending on alignment */
+	.artist__item.preview-align-left:not(.is-visible) .artist__preview {
+		transform: translate(calc(-1 * var(--scale-1000)), -50%);
+	}
+
+	.artist__item.preview-align-center:not(.is-visible) .artist__preview {
+		transform: translate(-50%, var(--scale-800));
+	}
+
+	.artist__item.preview-align-right:not(.is-visible) .artist__preview {
+		transform: translate(var(--scale-1000), -50%);
+	}
+
+	/* Preview size; alignment (left/center/right) set randomly by JS */
 	.artist__item.is-visible .artist__preview {
 		top: 50%;
+		max-width: min(52vw, calc(2 * var(--scale-1000)));
+		max-height: min(48vh, calc(2 * var(--scale-1000)));
+	}
+
+	.artist__item.is-visible.preview-align-left .artist__preview {
+		left: 0;
+		right: auto;
+		transform: translateY(-50%);
+	}
+
+	.artist__item.is-visible.preview-align-center .artist__preview {
 		left: 50%;
-		max-width: min(75vw, 380px);
-		max-height: min(70vh, 380px);
+		right: auto;
 		transform: translate(-50%, -50%);
+	}
+
+	.artist__item.is-visible.preview-align-right .artist__preview {
+		left: auto;
+		right: 0;
+		transform: translateY(-50%);
+	}
+}
+
+@media (max-width: 375px) {
+	.artist__name {
+		font-size: var(--font-heading-sm);
 	}
 }
 

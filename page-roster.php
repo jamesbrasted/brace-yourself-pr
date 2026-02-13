@@ -45,7 +45,7 @@ $artist_query = new WP_Query(
 				</header><!-- .entry-header -->
 				<div class="entry-content centered__content flow text-heading-xl">
 					<?php if ( $artist_query->have_posts() ) : ?>
-						<ul class="roster" data-module="roster">
+						<ul class="roster" data-module="roster" aria-label="<?php esc_attr_e( 'Artists', 'brace-yourself' ); ?>">
 							<?php
 							while ( $artist_query->have_posts() ) {
 								$artist_query->the_post();
@@ -74,10 +74,11 @@ $artist_query = new WP_Query(
 											'artist-preview',
 											false,
 											array(
-												'class'    => 'artist__preview',
-												'loading'  => 'lazy',
-												'decoding' => 'async',
-												'alt'      => '',
+												'class'       => 'artist__preview',
+												'loading'     => 'lazy',
+												'decoding'    => 'async',
+												'alt'         => '',
+												'aria-hidden' => 'true',
 											)
 										);
 									}
@@ -89,6 +90,10 @@ $artist_query = new WP_Query(
 						</ul>
 						<?php
 						wp_reset_postdata();
+					else :
+						?>
+						<p class="roster__empty text-caption"><?php esc_html_e( 'No artists to display.', 'brace-yourself' ); ?></p>
+						<?php
 					endif;
 					?>
 				</div>

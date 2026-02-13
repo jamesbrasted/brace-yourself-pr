@@ -190,6 +190,17 @@
 
 		if (itemsWithPreview.length === 0) return;
 
+		const alignments = ['preview-align-left', 'preview-align-center', 'preview-align-right'];
+		let prevAlignment = null;
+		itemsWithPreview.forEach(({ li }) => {
+			const choices = prevAlignment
+				? alignments.filter((a) => a !== prevAlignment)
+				: alignments;
+			const alignment = choices[Math.floor(Math.random() * choices.length)];
+			li.classList.add(alignment);
+			prevAlignment = alignment;
+		});
+
 		const desktop = window.matchMedia('(hover: hover) and (pointer: fine)');
 		const mobile = window.matchMedia('(hover: none)');
 		let teardownDesktop = null;
