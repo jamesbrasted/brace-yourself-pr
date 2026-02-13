@@ -107,6 +107,9 @@ function brace_yourself_image_sizes() {
 	add_image_size( 'thumbnail-large', 400, 400, true );
 	add_image_size( 'thumbnail-medium', 300, 300, true );
 	add_image_size( 'thumbnail-small', 150, 150, true );
+
+	// Artist hover preview (Roster page)
+	add_image_size( 'artist-preview', 600, 600, false );
 }
 add_action( 'after_setup_theme', 'brace_yourself_image_sizes' );
 

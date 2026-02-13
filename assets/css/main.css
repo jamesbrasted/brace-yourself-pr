@@ -1028,6 +1028,11 @@ a:focus-visible {
 	margin-bottom: var(--space-800);
 }
 
+/* No visual spacing when the only content is an sr-only title (e.g. About, Roster, content pages) */
+.entry-header:has(.entry-title.sr-only) {
+	margin: 0;
+}
+
 .entry-title {
 	margin-bottom: var(--space-600);
 }
@@ -1301,10 +1306,10 @@ a:focus-visible {
 }
 
 /* ========================================
-   ABOUT PAGE CENTERED LAYOUT
+   CENTERED LAYOUT (viewport-centered content)
    ======================================== */
 
-.site-main--about-centered {
+.site-main--centered {
 	height: 100vh;
 	display: flex;
 	align-items: center;
@@ -1312,21 +1317,95 @@ a:focus-visible {
 	overflow: hidden;
 }
 
-.about-centered {
+.centered {
 	width: 100%;
 	margin: 0 auto;
 }
 
-.about-centered__inner {
+.centered__inner {
 	width: 100%;
 }
 
-.about-centered__content {
+.centered__content {
 	text-align: center;
 }
 
-.about-centered__content p + p {
+.centered__content p + p {
 	margin-top: var(--space-600);
+}
+
+/* ========================================
+   ROSTER (artist list)
+   ======================================== */
+
+.roster {
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-100);
+}
+
+.roster__item {
+	position: relative;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: center;
+	gap: var(--space-400);
+}
+
+a.roster__name {
+	color: var(--color-text);
+	text-decoration: none;
+}
+
+.roster__name,
+.roster__subtitle {
+	position: relative;
+	z-index: 1;
+}
+
+.roster__preview {
+	pointer-events: none;
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: 0;
+	display: block;
+	width: auto;
+	height: auto;
+	max-width: min(90vw, 560px);
+	max-height: min(90vh, 560px);
+	object-fit: contain;
+	opacity: 0;
+	transition: opacity 0.2s ease;
+	transform: translate3d(0, 0, 0);
+}
+
+/* Desktop: show preview on hover */
+@media (hover: hover) and (pointer: fine) {
+	.roster__item {
+		z-index: 0;
+	}
+
+	.roster__item:hover {
+		z-index: 1;
+	}
+
+	.roster__item:hover .roster__preview {
+		opacity: 1;
+	}
+}
+
+/* Mobile: show preview when item is in view (JS toggles .is-visible) */
+@media (hover: none) {
+	.roster__preview {
+		transition-duration: 0.3s;
+	}
+
+	.roster__item.is-visible .roster__preview {
+		opacity: 1;
+	}
 }
 
 /* ========================================

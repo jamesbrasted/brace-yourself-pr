@@ -29,7 +29,7 @@ function brace_yourself_scripts() {
 		BRACE_YOURSELF_TEMPLATE_URI . '/assets/js/main.js',
 		array(),
 		BRACE_YOURSELF_VERSION,
-		true // Load in footer
+		true
 	);
 
 	// Add defer attribute to script

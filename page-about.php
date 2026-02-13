@@ -11,16 +11,22 @@
 get_header();
 ?>
 
-	<main id="primary" class="site-main site-main--about-centered">
+	<main id="primary" class="site-main site-main--centered">
 
 		<?php
 		while ( have_posts() ) :
 			the_post();
 			?>
 
-			<article id="post-<?php the_ID(); ?>" <?php post_class( 'about-centered' ); ?>>
-				<div class="about-centered__inner">
-					<div class="about-centered__content flow text-heading-xl">
+			<article id="post-<?php the_ID(); ?>" <?php post_class( 'centered' ); ?>>
+				<header class="entry-header">
+					<?php
+					// Keep semantic H1 for SEO and accessibility, but hide it visually.
+					the_title( '<h1 class="entry-title sr-only">', '</h1>' );
+					?>
+				</header><!-- .entry-header -->
+				<div class="centered__inner">
+					<div class="centered__content flow text-heading-xl">
 						<?php
 						the_content();
 
@@ -31,8 +37,8 @@ get_header();
 							)
 						);
 						?>
-					</div>
-				</div>
+					</div><!-- .centered__content -->
+				</div><!-- .centered__inner -->
 			</article>
 
 			<?php

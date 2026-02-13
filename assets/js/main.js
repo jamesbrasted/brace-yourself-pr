@@ -2,8 +2,8 @@
  * Brace Yourself Theme - Main JavaScript
  *
  * Minimal vanilla JS — only what CSS cannot handle.
- * Currently: video carousel management (autoplay detection, lazy loading, pause-on-hidden).
- * Smooth scrolling and lazy loading are handled by CSS and native browser features.
+ * Carousel: autoplay detection, lazy loading, pause-on-hidden.
+ * Roster: hover preview (cursor follow) and viewport visibility on mobile.
  *
  * @package Brace_Yourself
  */
@@ -16,6 +16,7 @@
 	 */
 	function init() {
 		initBackgroundCarousel();
+		initRoster();
 	}
 
 	/**
@@ -172,6 +173,76 @@
 				video.classList.add('is-playing');
 			}
 		});
+	}
+
+	/**
+	 * Roster (artist list): hover preview follows cursor on desktop,
+	 * IntersectionObserver toggles .is-visible on mobile.
+	 */
+	function initRoster() {
+		const rosterEl = document.querySelector('.roster[data-module="roster"]');
+		if (!rosterEl) return;
+
+		const rosterItems = Array.from(rosterEl.querySelectorAll('.roster__item'));
+		const itemsWithPreview = rosterItems
+			.map((li) => ({ li, preview: li.querySelector('.roster__preview') }))
+			.filter(({ preview }) => preview);
+
+		if (itemsWithPreview.length === 0) return;
+
+		const desktop = window.matchMedia('(hover: hover) and (pointer: fine)');
+		const mobile = window.matchMedia('(hover: none)');
+
+		function setupDesktop() {
+			let rafId = null;
+
+			function updatePreviewTransform(li, preview, x, y) {
+				const liRect = li.getBoundingClientRect();
+				const imgRect = preview.getBoundingClientRect();
+				const relX = x - liRect.left;
+				const relY = y - liRect.top;
+				// Center the image on the cursor (vertical and horizontal)
+				const tx = relX - imgRect.width / 2;
+				const ty = relY - imgRect.height / 2;
+				preview.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
+			}
+
+			function onMove(e) {
+				const li = e.target.closest('.roster__item');
+				if (!li) return;
+				const pair = itemsWithPreview.find(({ li: l }) => l === li);
+				if (!pair) return;
+				if (rafId !== null) cancelAnimationFrame(rafId);
+				rafId = requestAnimationFrame(() => {
+					updatePreviewTransform(pair.li, pair.preview, e.clientX, e.clientY);
+					rafId = null;
+				});
+			}
+
+			rosterEl.addEventListener('mousemove', onMove, { passive: true });
+		}
+
+		function setupMobile() {
+			const observer = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((entry) => {
+						if (entry.isIntersecting) {
+							entry.target.classList.add('is-visible');
+						} else {
+							entry.target.classList.remove('is-visible');
+						}
+					});
+				},
+				{ root: null, rootMargin: '0px', threshold: 0.1 }
+			);
+			itemsWithPreview.forEach(({ li }) => observer.observe(li));
+		}
+
+		if (desktop.matches) setupDesktop();
+		else if (mobile.matches) setupMobile();
+
+		desktop.addEventListener('change', (e) => { if (e.matches) setupDesktop(); });
+		mobile.addEventListener('change', (e) => { if (e.matches) setupMobile(); });
 	}
 
 	// Initialize when DOM is ready

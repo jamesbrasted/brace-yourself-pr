@@ -23,6 +23,9 @@ require_once BRACE_YOURSELF_TEMPLATE_DIR . '/inc/setup.php';
 // Load asset management
 require_once BRACE_YOURSELF_TEMPLATE_DIR . '/inc/assets.php';
 
+// Load Artists system (CPT)
+require_once BRACE_YOURSELF_TEMPLATE_DIR . '/inc/artists.php';
+
 // Load ACF configuration
 require_once BRACE_YOURSELF_TEMPLATE_DIR . '/inc/acf.php';
 

@@ -401,6 +401,61 @@ function brace_yourself_register_acf_field_groups() {
 		)
 	);
 
+	// Artist Details (artist post type only — ACF Free: text + image only)
+	acf_add_local_field_group(
+		array(
+			'key'                   => 'group_artist_details',
+			'title'                 => 'Artist Details',
+			'fields'                => array(
+				array(
+					'key'               => 'field_artist_subtitle',
+					'label'             => __( 'Subtitle', 'brace-yourself' ),
+					'name'              => 'subtitle',
+					'type'              => 'text',
+					'instructions'      => __( 'Optional line of text shown under the artist name on the Roster page.', 'brace-yourself' ),
+					'required'          => 0,
+					'placeholder'       => '',
+					'default_value'     => '',
+				),
+				array(
+					'key'               => 'field_artist_link',
+					'label'             => __( 'Link', 'brace-yourself' ),
+					'name'              => 'link',
+					'type'              => 'url',
+					'instructions'      => __( 'Optional URL. When set, the artist name on the Roster page becomes a link to this URL.', 'brace-yourself' ),
+					'required'          => 0,
+					'placeholder'       => 'https://',
+				),
+				array(
+					'key'               => 'field_artist_hover_image',
+					'label'             => __( 'Hover preview image', 'brace-yourself' ),
+					'name'              => 'hover_image',
+					'type'              => 'image',
+					'instructions'      => __( 'Optional image shown on hover (desktop) or when in view (mobile) on the Roster page.', 'brace-yourself' ),
+					'required'          => 0,
+					'return_format'     => 'array',
+					'preview_size'      => 'medium',
+					'library'           => 'all',
+				),
+			),
+			'location'              => array(
+				array(
+					array(
+						'param'    => 'post_type',
+						'operator' => '==',
+						'value'    => 'artist',
+					),
+				),
+			),
+			'active'                => 1,
+			'menu_order'            => 0,
+			'position'              => 'normal',
+			'style'                 => 'default',
+			'label_placement'       => 'top',
+			'instruction_placement' => 'label',
+		)
+	);
+
 	// Add more field groups here as needed
 }
 add_action( 'acf/init', 'brace_yourself_register_acf_field_groups' );
