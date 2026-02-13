@@ -8,7 +8,13 @@
  * @package Brace_Yourself
  */
 
+$roster_body_class = function ( $classes ) {
+	$classes[] = 'roster-page';
+	return $classes;
+};
+add_filter( 'body_class', $roster_body_class );
 get_header();
+remove_filter( 'body_class', $roster_body_class );
 
 $artist_query = new WP_Query(
 	array(
@@ -52,14 +58,14 @@ $artist_query = new WP_Query(
 								$has_image  = is_array( $hover_img ) && ! empty( $hover_img['ID'] );
 								$link_attrs = ( $has_link && strpos( $link, home_url() ) !== 0 ) ? ' rel="noopener noreferrer" target="_blank"' : '';
 								?>
-								<li class="roster__item">
+								<li class="artist__item">
 									<?php if ( $has_link ) : ?>
-										<a href="<?php echo esc_url( $link ); ?>" class="roster__name"<?php echo $link_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>><?php echo esc_html( get_the_title() ); ?></a>
+										<a href="<?php echo esc_url( $link ); ?>" class="artist__name"<?php echo $link_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>><?php echo esc_html( get_the_title() ); ?></a>
 									<?php else : ?>
-										<span class="roster__name"><?php echo esc_html( get_the_title() ); ?></span>
+										<span class="artist__name"><?php echo esc_html( get_the_title() ); ?></span>
 									<?php endif; ?>
 									<?php if ( $has_sub ) : ?>
-										<span class="roster__subtitle text-caption"><?php echo esc_html( trim( $subtitle ) ); ?></span>
+										<span class="artist__subtitle text-caption"><?php echo esc_html( trim( $subtitle ) ); ?></span>
 									<?php endif; ?>
 									<?php
 									if ( $has_image ) {
@@ -68,9 +74,10 @@ $artist_query = new WP_Query(
 											'artist-preview',
 											false,
 											array(
-												'class'   => 'roster__preview',
-												'loading' => 'lazy',
-												'alt'     => '',
+												'class'    => 'artist__preview',
+												'loading'  => 'lazy',
+												'decoding' => 'async',
+												'alt'      => '',
 											)
 										);
 									}

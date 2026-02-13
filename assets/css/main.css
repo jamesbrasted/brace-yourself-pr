@@ -1338,14 +1338,24 @@ a:focus-visible {
    ROSTER (artist list)
    ======================================== */
 
+body.roster-page .site-main {
+	padding: var(--space-800) var(--space-600);
+}
+
+@media (min-width: 768px) {
+	body.roster-page .site-main {
+		padding: var(--space-1000) var(--space-600);
+	}
+}
+
 .roster {
 	list-style: none;
 	display: flex;
 	flex-direction: column;
-	gap: var(--space-100);
+	gap: var(--space-800);
 }
 
-.roster__item {
+.artist__item {
 	position: relative;
 	display: flex;
 	flex-wrap: wrap;
@@ -1354,57 +1364,75 @@ a:focus-visible {
 	gap: var(--space-400);
 }
 
-a.roster__name {
+a.artist__name {
 	color: var(--color-text);
 	text-decoration: none;
 }
 
-.roster__name,
-.roster__subtitle {
+.artist__name,
+.artist__subtitle {
 	position: relative;
 	z-index: 1;
 }
 
-.roster__preview {
+/* Initial state: zero size so image never extends document or adds scroll height */
+.artist__preview {
 	pointer-events: none;
 	position: absolute;
 	left: 0;
 	top: 0;
 	z-index: 0;
-	display: block;
-	width: auto;
-	height: auto;
-	max-width: min(90vw, 560px);
-	max-height: min(90vh, 560px);
-	object-fit: contain;
+	width: 0;
+	height: 0;
+	min-width: 0;
+	min-height: 0;
+	overflow: hidden;
 	opacity: 0;
 	transition: opacity 0.2s ease;
 	transform: translate3d(0, 0, 0);
 }
 
-/* Desktop: show preview on hover */
-@media (hover: hover) and (pointer: fine) {
-	.roster__item {
-		z-index: 0;
-	}
+/* Preview visible state (hover on desktop, .is-visible on mobile) */
+.artist__item:hover .artist__preview,
+.artist__item.is-visible .artist__preview {
+	width: auto;
+	height: auto;
+	min-width: 0;
+	min-height: 0;
+	max-width: min(90vw, 560px);
+	max-height: min(90vh, 560px);
+	object-fit: contain;
+	opacity: 1;
+}
 
-	.roster__item:hover {
-		z-index: 1;
-	}
-
-	.roster__item:hover .roster__preview {
-		opacity: 1;
+@media (min-width: 768px) {
+	.roster {
+		gap: var(--space-100);
 	}
 }
 
-/* Mobile: show preview when item is in view (JS toggles .is-visible) */
+@media (hover: hover) and (pointer: fine) {
+	.artist__item {
+		z-index: 0;
+	}
+
+	.artist__item:hover {
+		z-index: 1;
+	}
+}
+
 @media (hover: none) {
-	.roster__preview {
+	.artist__preview {
 		transition-duration: 0.3s;
 	}
 
-	.roster__item.is-visible .roster__preview {
-		opacity: 1;
+	/* Vertically centre preview on artist name and use a slightly smaller size */
+	.artist__item.is-visible .artist__preview {
+		top: 50%;
+		left: 50%;
+		max-width: min(75vw, 380px);
+		max-height: min(70vh, 380px);
+		transform: translate(-50%, -50%);
 	}
 }
 

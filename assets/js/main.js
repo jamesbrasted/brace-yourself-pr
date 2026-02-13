@@ -183,17 +183,23 @@
 		const rosterEl = document.querySelector('.roster[data-module="roster"]');
 		if (!rosterEl) return;
 
-		const rosterItems = Array.from(rosterEl.querySelectorAll('.roster__item'));
+		const rosterItems = Array.from(rosterEl.querySelectorAll('.artist__item'));
 		const itemsWithPreview = rosterItems
-			.map((li) => ({ li, preview: li.querySelector('.roster__preview') }))
+			.map((li) => ({ li, preview: li.querySelector('.artist__preview') }))
 			.filter(({ preview }) => preview);
 
 		if (itemsWithPreview.length === 0) return;
 
 		const desktop = window.matchMedia('(hover: hover) and (pointer: fine)');
 		const mobile = window.matchMedia('(hover: none)');
+		let teardownDesktop = null;
+		let teardownMobile = null;
 
 		function setupDesktop() {
+			if (teardownMobile) {
+				teardownMobile();
+				teardownMobile = null;
+			}
 			let rafId = null;
 
 			function updatePreviewTransform(li, preview, x, y) {
@@ -201,14 +207,13 @@
 				const imgRect = preview.getBoundingClientRect();
 				const relX = x - liRect.left;
 				const relY = y - liRect.top;
-				// Center the image on the cursor (vertical and horizontal)
 				const tx = relX - imgRect.width / 2;
 				const ty = relY - imgRect.height / 2;
 				preview.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
 			}
 
 			function onMove(e) {
-				const li = e.target.closest('.roster__item');
+				const li = e.target.closest('.artist__item');
 				if (!li) return;
 				const pair = itemsWithPreview.find(({ li: l }) => l === li);
 				if (!pair) return;
@@ -220,22 +225,29 @@
 			}
 
 			rosterEl.addEventListener('mousemove', onMove, { passive: true });
+			teardownDesktop = () => {
+				rosterEl.removeEventListener('mousemove', onMove);
+			};
 		}
 
 		function setupMobile() {
+			if (teardownDesktop) {
+				teardownDesktop();
+				teardownDesktop = null;
+			}
 			const observer = new IntersectionObserver(
 				(entries) => {
 					entries.forEach((entry) => {
-						if (entry.isIntersecting) {
-							entry.target.classList.add('is-visible');
-						} else {
-							entry.target.classList.remove('is-visible');
-						}
+						entry.target.classList.toggle('is-visible', entry.isIntersecting);
 					});
 				},
 				{ root: null, rootMargin: '0px', threshold: 0.1 }
 			);
 			itemsWithPreview.forEach(({ li }) => observer.observe(li));
+			teardownMobile = () => {
+				observer.disconnect();
+				itemsWithPreview.forEach(({ li }) => li.classList.remove('is-visible'));
+			};
 		}
 
 		if (desktop.matches) setupDesktop();
