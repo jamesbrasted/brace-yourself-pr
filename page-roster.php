@@ -50,9 +50,11 @@ $artist_query = new WP_Query(
 							while ( $artist_query->have_posts() ) {
 								$artist_query->the_post();
 								$artist_id  = get_the_ID();
-								$subtitle   = get_field( 'subtitle', $artist_id );
-								$link       = get_field( 'link', $artist_id );
-								$hover_img  = get_field( 'hover_image', $artist_id );
+								// Single get_fields() per artist instead of three get_field() calls.
+								$fields     = function_exists( 'get_fields' ) ? get_fields( $artist_id ) : array();
+								$subtitle   = is_array( $fields ) && isset( $fields['subtitle'] ) ? $fields['subtitle'] : '';
+								$link       = is_array( $fields ) && isset( $fields['link'] ) ? $fields['link'] : '';
+								$hover_img  = is_array( $fields ) && isset( $fields['hover_image'] ) ? $fields['hover_image'] : null;
 								$has_sub    = is_string( $subtitle ) && trim( $subtitle ) !== '';
 								$has_link   = is_string( $link ) && trim( $link ) !== '' && esc_url( $link ) !== '';
 								$has_image  = is_array( $hover_img ) && ! empty( $hover_img['ID'] );

@@ -20,14 +20,16 @@ if ( is_front_page() ) {
 ?>
 
 	<?php
-	// Determine if footer has any ACF-driven columns.
+	// Determine if footer has any ACF-driven columns. Single get_fields() avoids 4 separate meta lookups.
 	$footer_page_id = function_exists( 'brace_yourself_get_footer_settings_page_id' ) ? brace_yourself_get_footer_settings_page_id() : 0;
 	$footer_columns = array();
 
-	if ( $footer_page_id ) {
-		for ( $i = 1; $i <= 4; $i++ ) {
-			$content = get_field( 'footer_column_' . $i, $footer_page_id );
-			$footer_columns[ $i ] = $content;
+	if ( $footer_page_id && function_exists( 'get_fields' ) ) {
+		$fields = get_fields( $footer_page_id );
+		if ( is_array( $fields ) ) {
+			for ( $i = 1; $i <= 4; $i++ ) {
+				$footer_columns[ $i ] = isset( $fields[ 'footer_column_' . $i ] ) ? $fields[ 'footer_column_' . $i ] : '';
+			}
 		}
 	}
 

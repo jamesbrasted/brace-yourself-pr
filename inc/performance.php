@@ -126,16 +126,8 @@ function brace_yourself_responsive_image_sizes( $attr, $attachment, $size ) {
 add_filter( 'wp_get_attachment_image_attributes', 'brace_yourself_responsive_image_sizes', 10, 3 );
 
 /**
- * Remove query strings from static resources.
- *
- * @param string $src Source URL.
- * @return string Modified source URL.
+ * Do not remove query strings from theme assets.
+ * Keeping ?ver= on script/style URLs ensures cache busting when BRACE_YOURSELF_VERSION
+ * is bumped, so browsers fetch new CSS/JS after deploy. Removed previous filter that
+ * stripped ver= and could cause stale assets.
  */
-function brace_yourself_remove_query_strings( $src ) {
-	if ( strpos( $src, '?ver=' ) ) {
-		$src = remove_query_arg( 'ver', $src );
-	}
-	return $src;
-}
-add_filter( 'script_loader_src', 'brace_yourself_remove_query_strings', 15, 1 );
-add_filter( 'style_loader_src', 'brace_yourself_remove_query_strings', 15, 1 );

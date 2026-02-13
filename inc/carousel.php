@@ -153,19 +153,39 @@ function brace_yourself_carousel_styles() {
 }
 add_action( 'wp_head', 'brace_yourself_carousel_styles', 5 );
 
+/** Transient key for carousel config. Invalidated when carousel options/settings are saved. */
+define( 'BRACE_YOURSELF_CAROUSEL_TRANSIENT', 'brace_yourself_carousel_data' );
+
+/** Transient TTL: 1 hour. */
+define( 'BRACE_YOURSELF_CAROUSEL_TRANSIENT_TTL', HOUR_IN_SECONDS );
+
 /**
  * Get carousel data from ACF.
  * Works with both ACF Pro (options page) and ACF Free (settings page).
+ * Cached per request (static) and across requests (transient) to avoid repeated get_field() calls.
  *
  * @return array Carousel configuration array.
  */
 function brace_yourself_get_carousel_data() {
+	static $cached = null;
+	if ( $cached !== null ) {
+		return $cached;
+	}
+
 	if ( ! brace_yourself_acf_active() ) {
-		return array(
+		$cached = array(
 			'images'        => array(),
 			'videos'        => array(),
 			'slide_duration' => 7,
 		);
+		return $cached;
+	}
+
+	// Use transient when available (avoids DB/meta work for anonymous traffic).
+	$stored = get_transient( BRACE_YOURSELF_CAROUSEL_TRANSIENT );
+	if ( is_array( $stored ) && isset( $stored['images'], $stored['videos'], $stored['slide_duration'] ) ) {
+		$cached = $stored;
+		return $cached;
 	}
 
 	// Try ACF Pro options page first
@@ -261,12 +281,31 @@ function brace_yourself_get_carousel_data() {
 	// This prevents extremely long cycles that would slow transitions.
 	$duration = 7;
 
-	return array(
+	$cached = array(
 		'images'        => $images,
 		'videos'        => $videos,
 		'slide_duration' => absint( $duration ),
 	);
+	set_transient( BRACE_YOURSELF_CAROUSEL_TRANSIENT, $cached, BRACE_YOURSELF_CAROUSEL_TRANSIENT_TTL );
+	return $cached;
 }
+
+/**
+ * Invalidate carousel transient when options or carousel settings page is saved.
+ *
+ * @param int|string $post_id Post ID or 'option' for ACF options page.
+ */
+function brace_yourself_invalidate_carousel_transient( $post_id ) {
+	if ( $post_id === 'option' ) {
+		delete_transient( BRACE_YOURSELF_CAROUSEL_TRANSIENT );
+		return;
+	}
+	$page = get_page_by_path( 'carousel-settings', OBJECT, 'page' );
+	if ( $page && (int) $post_id === (int) $page->ID ) {
+		delete_transient( BRACE_YOURSELF_CAROUSEL_TRANSIENT );
+	}
+}
+add_action( 'acf/save_post', 'brace_yourself_invalidate_carousel_transient', 20 );
 
 /**
  * Check if device is mobile.
@@ -331,11 +370,17 @@ function brace_yourself_get_video_url( $video_data ) {
 
 /**
  * Get carousel items (images and videos) with proper formatting.
+ * Cached per request so preload, styles, and template share one computation.
  *
  * @return array Formatted carousel items.
  */
 function brace_yourself_get_carousel_items() {
-	$data = brace_yourself_get_carousel_data();
+	static $cached_items = null;
+	if ( $cached_items !== null ) {
+		return $cached_items;
+	}
+
+	$data  = brace_yourself_get_carousel_data();
 	$items = array();
 
 	// Check if videos is in repeater format (has video_desktop key)
@@ -429,5 +474,6 @@ function brace_yourself_get_carousel_items() {
 		}
 	}
 
-	return $items;
+	$cached_items = $items;
+	return $cached_items;
 }
