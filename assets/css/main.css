@@ -105,11 +105,24 @@ body {
 		transition-duration: 0.01ms !important;
 		scroll-behavior: auto !important;
 	}
-	
+
 	/* Exception: Background carousel should still animate but slower */
 	.background-carousel__item {
 		animation-duration: var(--total-duration, 7000ms) !important;
 		animation-iteration-count: infinite !important;
+	}
+
+	/* Reduced motion: show single centered logo instead of static ticker strip */
+	.site-title__ticker {
+		display: none !important;
+	}
+	.site-title__svg--desktop {
+		display: block !important;
+		width: calc(100vw - var(--space-400) * 2);
+		height: auto;
+		max-width: none;
+		margin-left: auto;
+		margin-right: auto;
 	}
 }
 

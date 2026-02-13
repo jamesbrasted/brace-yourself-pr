@@ -84,6 +84,48 @@ function brace_yourself_content_width() {
 }
 add_action( 'after_setup_theme', 'brace_yourself_content_width', 0 );
 
+/**
+ * Output meta description when no SEO plugin is active.
+ *
+ * Improves SEO and social sharing. Yoast and Rank Math output their own;
+ * this runs only as a fallback so it does not duplicate or override them.
+ */
+function brace_yourself_meta_description() {
+	if ( function_exists( 'wpseo_init' ) || class_exists( 'RankMath', false ) ) {
+		return;
+	}
+
+	$description = '';
+	if ( is_front_page() && is_home() ) {
+		$description = get_bloginfo( 'description' );
+	} elseif ( is_singular() ) {
+		$description = get_the_excerpt();
+		if ( ! $description && is_single() ) {
+			$description = wp_trim_words( get_the_content(), 30 );
+		}
+	} elseif ( is_category() ) {
+		$description = category_description();
+	} elseif ( is_tag() ) {
+		$description = tag_description();
+	}
+
+	$description = trim( $description );
+	if ( $description ) {
+		echo '<meta name="description" content="' . esc_attr( wp_strip_all_tags( $description ) ) . '">' . "\n";
+	}
+}
+add_action( 'wp_head', 'brace_yourself_meta_description', 2 );
+
+/**
+ * Theme color for mobile browser UI (address bar, etc.).
+ *
+ * Matches theme background (#121212) for a cohesive experience.
+ */
+function brace_yourself_theme_color() {
+	echo '<meta name="theme-color" content="#121212">' . "\n";
+}
+add_action( 'wp_head', 'brace_yourself_theme_color', 2 );
+
 // No traditional widget areas are used; footer content is managed via ACF.
 
 /**

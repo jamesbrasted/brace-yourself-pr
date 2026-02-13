@@ -55,15 +55,20 @@ function brace_yourself_defer_scripts( $tag, $handle ) {
 }
 
 /**
- * Preload critical font file.
+ * Preload critical assets for faster LCP.
  *
- * Only preload exactly one font file if using custom fonts.
- * This example assumes a custom font - adjust as needed.
+ * Preloads the main stylesheet and primary heading font so the browser
+ * discovers them before parsing the rest of the document.
  */
-function brace_yourself_preload_fonts() {
-	// Uncomment and adjust if using a custom font:
-	/*
-	echo '<link rel="preload" href="' . esc_url( BRACE_YOURSELF_TEMPLATE_URI . '/assets/fonts/font-name.woff2' ) . '" as="font" type="font/woff2" crossorigin>';
-	*/
+function brace_yourself_preload_critical_assets() {
+	// Main CSS (browser will use this when it hits the enqueued stylesheet).
+	$css_url = BRACE_YOURSELF_TEMPLATE_URI . '/assets/css/main.css';
+	if ( BRACE_YOURSELF_VERSION ) {
+		$css_url = add_query_arg( 'ver', BRACE_YOURSELF_VERSION, $css_url );
+	}
+	echo '<link rel="preload" href="' . esc_url( $css_url ) . '" as="style">' . "\n";
+
+	// Primary heading font (Pilat Bold) – improves LCP text rendering.
+	echo '<link rel="preload" href="' . esc_url( BRACE_YOURSELF_TEMPLATE_URI . '/assets/fonts/Pilat-Bold.woff2' ) . '" as="font" type="font/woff2" crossorigin>' . "\n";
 }
-add_action( 'wp_head', 'brace_yourself_preload_fonts', 1 );
+add_action( 'wp_head', 'brace_yourself_preload_critical_assets', 1 );
