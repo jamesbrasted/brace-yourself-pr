@@ -615,10 +615,17 @@ a:focus-visible {
 	display: block;
 }
 
+/* Tagline: in DOM for SEO, visually hidden on site */
 .site-description {
-	font-size: var(--text-sm);
-	color: rgba(255, 255, 255, 0.7);
-	margin-top: var(--space-200);
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
 }
 
 /* Ticker tape animation for mobile SVG */
