@@ -561,87 +561,6 @@ a:focus-visible {
 	padding-bottom: var(--space-section);
 }
 
-/* ========================================
-   COMPONENT STYLES
-   ======================================== */
-
-/* Button Component */
-.btn {
-	display: inline-block;
-	padding: var(--space-400) var(--space-700);
-	font-size: var(--font-body);
-	font-family: var(--font-family-body);
-	line-height: var(--line-height-base);
-	color: var(--color-text);
-	background-color: var(--color-accent);
-	border: none;
-	border-radius: var(--radius-base);
-	cursor: pointer;
-	transition: background-color var(--duration-base) var(--ease-standard),
-				transform var(--duration-fast) var(--ease-standard);
-	text-decoration: none;
-}
-
-.btn:hover,
-.btn:focus {
-	background-color: var(--color-accent);
-	opacity: 0.9;
-	text-decoration: none;
-}
-
-.btn:active {
-	transform: scale(0.98);
-}
-
-.btn:focus-visible {
-	outline: 2px solid var(--color-accent);
-	outline-offset: 2px;
-}
-
-/* Hero Component */
-.hero {
-	position: relative;
-	min-height: 60vh;
-	display: flex;
-	align-items: center;
-}
-
-.hero__image {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	z-index: -1;
-	overflow: hidden;
-}
-
-.hero__image img {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-}
-
-.hero__content {
-	position: relative;
-	z-index: 1;
-	max-width: 800px;
-}
-
-.hero__heading {
-	margin-bottom: var(--space-600);
-}
-
-.hero__subheading {
-	margin-bottom: var(--space-800);
-	font-size: var(--text-lg);
-	line-height: var(--line-height-relaxed);
-}
-
-.hero__cta {
-	margin-top: var(--space-800);
-}
-
 /* Site Header */
 .site-header {
 	position: relative;
@@ -1249,9 +1168,15 @@ a:focus-visible {
 	min-height: 100vh;
 }
 
-/* Frontpage: Always exactly 100vh */
-.home #page {
+/* Frontpage: Exactly one viewport, no scroll (use 100dvh so mobile address bar doesn't add scroll) */
+body.home {
 	height: 100vh;
+	height: 100dvh;
+	overflow: hidden;
+}
+
+.home #page {
+	height: 100%;
 	overflow: hidden;
 }
 
@@ -1318,12 +1243,26 @@ a:focus-visible {
 	}
 }
 
+@media (max-width: 375px) {
+	.homepage-intro__text {
+		font-size: var(--text-sm);
+	}
+}
+
 /* ========================================
    CENTERED LAYOUT (viewport-centered content)
    ======================================== */
 
-.site-main--centered {
+/* About/centered pages: one viewport tall, no scroll — #page is flex column, main takes remaining space */
+#page:has(.site-main--centered) {
 	height: 100vh;
+	height: 100dvh;
+	overflow: hidden;
+}
+
+.site-main--centered {
+	flex: 1;
+	min-height: 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;

@@ -105,6 +105,18 @@ function brace_yourself_get_footer_settings_page_id() {
 }
 
 /**
+ * Get about page ID.
+ * Returns the ID of the page with slug "about" (the canonical About page).
+ * Same pattern as the front page: one specific page is the About page.
+ *
+ * @return int|false Page ID or false if no page with slug "about" exists.
+ */
+function brace_yourself_get_about_page_id() {
+	$page = get_page_by_path( 'about', OBJECT, 'page' );
+	return $page ? (int) $page->ID : false;
+}
+
+/**
  * Get carousel fields based on ACF version (Pro vs Free).
  *
  * @return array Array of field definitions.
@@ -385,13 +397,54 @@ function brace_yourself_register_acf_field_groups() {
 					'label'             => 'Intro Text',
 					'name'              => 'homepage_intro_text',
 					'type'              => 'text',
-					'instructions'      => 'A line of copy displayed at the bottom of the viewport on the homepage.',
+					'instructions'      => 'A line of copy displayed at the bottom of the viewport on the homepage. Maximum 200 characters.',
 					'required'          => 0,
+					'maxlength'         => 200,
 					'placeholder'       => 'Enter homepage intro text',
 					'default_value'     => '',
 				),
 			),
 			'location'              => $homepage_intro_location,
+			'active'                => 1,
+			'menu_order'            => 1,
+			'position'              => 'normal',
+			'style'                 => 'default',
+			'label_placement'       => 'top',
+			'instruction_placement' => 'label',
+		)
+	);
+
+	// About Page Field Group
+	// Location: About page only (page with slug "about") — same pattern as Homepage Intro
+	$about_page_id = brace_yourself_get_about_page_id();
+	$about_page_location = array();
+	if ( $about_page_id ) {
+		$about_page_location[] = array(
+			array(
+				'param'    => 'page',
+				'operator' => '==',
+				'value'    => $about_page_id,
+			),
+		);
+	}
+	acf_add_local_field_group(
+		array(
+			'key'                   => 'group_about_page',
+			'title'                 => 'About Page',
+			'fields'                => array(
+				array(
+					'key'               => 'field_about_intro_text',
+					'label'             => 'About Text',
+					'name'              => 'about_intro_text',
+					'type'              => 'text',
+					'instructions'      => 'A line of copy displayed in the center of the About page. Maximum 200 characters.',
+					'required'          => 0,
+					'maxlength'         => 200,
+					'placeholder'       => 'Enter about page intro text',
+					'default_value'     => '',
+				),
+			),
+			'location'              => $about_page_location,
 			'active'                => 1,
 			'menu_order'            => 1,
 			'position'              => 'normal',

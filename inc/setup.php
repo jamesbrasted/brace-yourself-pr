@@ -181,21 +181,46 @@ add_filter( 'wp_get_nav_menu_items', 'brace_yourself_limit_primary_menu_items', 
 // No footer widget limiting needed; footer content is managed via ACF.
 
 /**
- * Disable block editor (Gutenberg) for the homepage.
- * Homepage content is managed via ACF fields, so blocks are not needed.
+ * Get the list of page IDs that are ACF-only (no content editor).
  *
- * @param bool   $use_block_editor Whether to use the block editor.
- * @param object $post The post object.
- * @return bool Filtered value.
+ * @return int[] Array of page IDs.
  */
+function brace_yourself_get_acf_only_page_ids() {
+	$ids = array();
+
+	$front_page_id = get_option( 'page_on_front' );
+	if ( $front_page_id ) {
+		$ids[] = (int) $front_page_id;
+	}
+	if ( function_exists( 'brace_yourself_get_carousel_settings_page_id' ) ) {
+		$carousel_page_id = brace_yourself_get_carousel_settings_page_id();
+		if ( $carousel_page_id ) {
+			$ids[] = (int) $carousel_page_id;
+		}
+	}
+	if ( function_exists( 'brace_yourself_get_footer_settings_page_id' ) ) {
+		$footer_page_id = brace_yourself_get_footer_settings_page_id();
+		if ( $footer_page_id ) {
+			$ids[] = (int) $footer_page_id;
+		}
+	}
+	if ( function_exists( 'brace_yourself_get_about_page_id' ) ) {
+		$about_page_id = brace_yourself_get_about_page_id();
+		if ( $about_page_id ) {
+			$ids[] = (int) $about_page_id;
+		}
+	}
+
+	return $ids;
+}
+
 function brace_yourself_disable_block_editor_for_homepage( $use_block_editor, $post ) {
-	if ( ! $post ) {
+	if ( ! $post || 'page' !== $post->post_type ) {
 		return $use_block_editor;
 	}
 
-	// Disable block editor if this post/page is set as the front page
-	$front_page_id = get_option( 'page_on_front' );
-	if ( $front_page_id && $post->ID == $front_page_id ) {
+	$ids = brace_yourself_get_acf_only_page_ids();
+	if ( ! empty( $ids ) && in_array( (int) $post->ID, $ids, true ) ) {
 		return false;
 	}
 
@@ -209,33 +234,13 @@ add_filter( 'use_block_editor_for_post', 'brace_yourself_disable_block_editor_fo
  * Currently includes:
  * - Static front page (homepage)
  * - Carousel Settings page (ACF Free compatibility)
+ * - Footer Settings page
+ * - About page (page with slug "about")
  *
  * @return bool True if editing an ACF-only page, false otherwise.
  */
 function brace_yourself_is_acf_only_page() {
-	$ids = array();
-
-	// Static front page.
-	$front_page_id = get_option( 'page_on_front' );
-	if ( $front_page_id ) {
-		$ids[] = (int) $front_page_id;
-	}
-
-	// Carousel Settings page (created via ACF helper).
-	if ( function_exists( 'brace_yourself_get_carousel_settings_page_id' ) ) {
-		$carousel_page_id = brace_yourself_get_carousel_settings_page_id();
-		if ( $carousel_page_id ) {
-			$ids[] = (int) $carousel_page_id;
-		}
-	}
-
-	// Footer Settings page (created via ACF helper).
-	if ( function_exists( 'brace_yourself_get_footer_settings_page_id' ) ) {
-		$footer_page_id = brace_yourself_get_footer_settings_page_id();
-		if ( $footer_page_id ) {
-			$ids[] = (int) $footer_page_id;
-		}
-	}
+	$ids = brace_yourself_get_acf_only_page_ids();
 
 	if ( empty( $ids ) ) {
 		return false;

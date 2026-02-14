@@ -1,9 +1,14 @@
 <?php
 /**
- * The template for displaying the About page
+ * Template Name: About
  *
- * Displays a centered paragraph of text aligned to the vertical and horizontal
- * center of the viewport for both desktop and mobile.
+ * The template for displaying the About page.
+ * Displays a centered line of copy from the About page ACF field, aligned to the
+ * vertical and horizontal center of the viewport for both desktop and mobile.
+ * Content is managed via ACF (one text field); the block editor is hidden.
+ *
+ * ACF Fields (About Page):
+ * - about_intro_text (text) - The intro copy to display
  *
  * @package Brace_Yourself
  */
@@ -16,8 +21,9 @@ get_header();
 		<?php
 		while ( have_posts() ) :
 			the_post();
-			?>
 
+			$intro_text = brace_yourself_get_field( 'about_intro_text', '', get_the_ID() );
+			?>
 			<article id="post-<?php the_ID(); ?>" <?php post_class( 'centered' ); ?>>
 				<header class="entry-header">
 					<?php
@@ -27,16 +33,9 @@ get_header();
 				</header><!-- .entry-header -->
 				<div class="centered__inner">
 					<div class="centered__content flow text-heading-xl">
-						<?php
-						the_content();
-
-						wp_link_pages(
-							array(
-								'before' => '<div class="page-links">' . esc_html__( 'Pages:', 'brace-yourself' ),
-								'after'  => '</div>',
-							)
-						);
-						?>
+						<?php if ( ! empty( $intro_text ) ) : ?>
+							<p class="about-intro__text"><?php echo esc_html( $intro_text ); ?></p>
+						<?php endif; ?>
 					</div><!-- .centered__content -->
 				</div><!-- .centered__inner -->
 			</article>
