@@ -13,7 +13,13 @@
  * @package Brace_Yourself
  */
 
+$about_body_class = function ( $classes ) {
+	$classes[] = 'about-page';
+	return $classes;
+};
+add_filter( 'body_class', $about_body_class );
 get_header();
+remove_filter( 'body_class', $about_body_class );
 ?>
 
 	<main id="primary" class="site-main site-main--centered">

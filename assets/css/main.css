@@ -1267,13 +1267,26 @@ body.home {
 	overflow: hidden;
 }
 
+/* About page: body class added by page-about.php so lock works even when :has() isn't applied */
+body.about-page {
+	height: 100vh;
+	height: 100dvh;
+	overflow: hidden;
+}
+
+body.about-page #page {
+	height: 100%;
+	overflow: hidden;
+}
+
 .site-main--centered {
 	flex: 1;
 	min-height: 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	overflow: hidden;
+	overflow-x: hidden;
+	overflow-y: auto; /* Scroll when text is too long (e.g. narrow breakpoints) */
 }
 
 .centered {
