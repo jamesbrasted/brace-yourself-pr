@@ -178,23 +178,14 @@ function brace_yourself_limit_primary_menu_items( $items, $menu ) {
 add_filter( 'wp_get_nav_menu_items', 'brace_yourself_limit_primary_menu_items', 10, 2 );
 
 /**
-// No footer widget limiting needed; footer content is managed via ACF.
-
-/**
- * Get the Roster page ID (the page using the Roster template).
+ * Get the Roster page ID (page with slug "roster", same pattern as About).
  * Content is built from the Artist post type; the page itself needs no editor.
  *
- * @return int|false Page ID or false if no page uses the Roster template.
+ * @return int|false Page ID or false if no page with slug "roster" exists.
  */
 function brace_yourself_get_roster_page_id() {
-	$pages = get_pages(
-		array(
-			'meta_key'   => '_wp_page_template',
-			'meta_value' => 'page-roster.php',
-			'number'     => 1,
-		)
-	);
-	return ! empty( $pages ) ? (int) $pages[0]->ID : false;
+	$page = get_page_by_path( 'roster', OBJECT, 'page' );
+	return $page ? (int) $page->ID : false;
 }
 
 /**
