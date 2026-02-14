@@ -160,8 +160,7 @@ define( 'BRACE_YOURSELF_CAROUSEL_TRANSIENT', 'brace_yourself_carousel_data' );
 define( 'BRACE_YOURSELF_CAROUSEL_TRANSIENT_TTL', HOUR_IN_SECONDS );
 
 /**
- * Get carousel data from ACF.
- * Works with both ACF Pro (options page) and ACF Free (settings page).
+ * Get carousel data from ACF (Free: Carousel Settings page only).
  * Cached per request (static) and across requests (transient) to avoid repeated get_field() calls.
  *
  * @return array Carousel configuration array.
@@ -188,83 +187,29 @@ function brace_yourself_get_carousel_data() {
 		return $cached;
 	}
 
-	// Try ACF Pro options page first
-	$images = get_field( 'carousel_images', 'option' );
-	$videos = get_field( 'carousel_videos', 'option' );
+	// ACF Free: get data from Carousel Settings page only
+	$images = array();
+	$videos = array();
+	$settings_page_id = brace_yourself_get_carousel_settings_page_id();
 
-	// If no data from options page, try settings page (ACF Free)
-	if ( empty( $images ) && empty( $videos ) ) {
-		$settings_page_id = brace_yourself_get_carousel_settings_page_id();
-		if ( $settings_page_id ) {
-			// Check if images is gallery (Pro) or separate image fields (Free)
-			$images_raw = get_field( 'carousel_images', $settings_page_id );
-			if ( $images_raw && is_array( $images_raw ) && isset( $images_raw[0]['url'] ) ) {
-				// ACF Pro: Gallery format (array of images)
-				$images = $images_raw;
-			} else {
-				// ACF Free: Collect images from separate fields
-				$images = array();
-				for ( $i = 1; $i <= 3; $i++ ) {
-					$desktop_image = get_field( 'carousel_image_' . $i . '_desktop', $settings_page_id );
-					if ( $desktop_image ) {
-						$mobile_image = get_field( 'carousel_image_' . $i . '_mobile', $settings_page_id );
-						$images[] = array(
-							'desktop' => $desktop_image,
-							'mobile'  => $mobile_image ? $mobile_image : null,
-						);
-					}
-				}
-			}
-			
-			// Check if ACF Pro (repeater) or Free (separate fields)
-			$is_pro = get_field( 'carousel_videos', $settings_page_id );
-			if ( $is_pro && is_array( $is_pro ) && isset( $is_pro[0]['video_desktop'] ) ) {
-				// ACF Pro format
-				$videos = $is_pro;
-			} else {
-				// ACF Free: Collect video from separate fields
-				$videos = array();
-				$desktop = get_field( 'video_1_desktop', $settings_page_id );
-				if ( $desktop ) {
-					$mobile = get_field( 'video_1_mobile', $settings_page_id );
-					$videos[] = array(
-						'video_desktop' => $desktop,
-						'video_mobile'  => $mobile ? $mobile : null,
-					);
-				}
+	if ( $settings_page_id ) {
+		for ( $i = 1; $i <= 4; $i++ ) {
+			$desktop_image = get_field( 'carousel_image_' . $i . '_desktop', $settings_page_id );
+			if ( $desktop_image ) {
+				$mobile_image = get_field( 'carousel_image_' . $i . '_mobile', $settings_page_id );
+				$images[] = array(
+					'desktop' => $desktop_image,
+					'mobile'  => $mobile_image ? $mobile_image : null,
+				);
 			}
 		}
-	} else {
-		// Options page - check if images need conversion (Free format)
-		if ( empty( $images ) || ( is_array( $images ) && ! isset( $images[0]['url'] ) && ! isset( $images[0]['sizes'] ) && ! isset( $images[0]['desktop'] ) ) ) {
-			// ACF Free: Collect images from separate fields
-			$converted_images = array();
-			for ( $i = 1; $i <= 3; $i++ ) {
-				$desktop_image = get_field( 'carousel_image_' . $i . '_desktop', 'option' );
-				if ( $desktop_image ) {
-					$mobile_image = get_field( 'carousel_image_' . $i . '_mobile', 'option' );
-					$converted_images[] = array(
-						'desktop' => $desktop_image,
-						'mobile'  => $mobile_image ? $mobile_image : null,
-					);
-				}
-			}
-			if ( ! empty( $converted_images ) ) {
-				$images = $converted_images;
-			}
-		}
-		
-		// Check if videos need conversion (Free format)
-		if ( empty( $videos ) || ( is_array( $videos ) && ! isset( $videos[0]['video_desktop'] ) ) ) {
-			// Options page but might be ACF Free format - check for separate fields
-			$desktop = get_field( 'video_1_desktop', 'option' );
+		foreach ( array( 1, 2 ) as $n ) {
+			$desktop = get_field( 'video_' . $n . '_desktop', $settings_page_id );
 			if ( $desktop ) {
-				$mobile = get_field( 'video_1_mobile', 'option' );
-				$videos = array(
-					array(
-						'video_desktop' => $desktop,
-						'video_mobile'  => $mobile ? $mobile : null,
-					),
+				$mobile = get_field( 'video_' . $n . '_mobile', $settings_page_id );
+				$videos[] = array(
+					'video_desktop' => $desktop,
+					'video_mobile'  => $mobile ? $mobile : null,
 				);
 			}
 		}
@@ -291,17 +236,13 @@ function brace_yourself_get_carousel_data() {
 }
 
 /**
- * Invalidate carousel transient when options or carousel settings page is saved.
+ * Invalidate carousel transient when Carousel Settings page is saved.
  *
- * @param int|string $post_id Post ID or 'option' for ACF options page.
+ * @param int|string $post_id Post ID.
  */
 function brace_yourself_invalidate_carousel_transient( $post_id ) {
-	if ( $post_id === 'option' ) {
-		delete_transient( BRACE_YOURSELF_CAROUSEL_TRANSIENT );
-		return;
-	}
-	$page = get_page_by_path( 'carousel-settings', OBJECT, 'page' );
-	if ( $page && (int) $post_id === (int) $page->ID ) {
+	$settings_page_id = brace_yourself_get_carousel_settings_page_id();
+	if ( $settings_page_id && (int) $post_id === (int) $settings_page_id ) {
 		delete_transient( BRACE_YOURSELF_CAROUSEL_TRANSIENT );
 	}
 }
@@ -383,90 +324,45 @@ function brace_yourself_get_carousel_items() {
 	$data  = brace_yourself_get_carousel_data();
 	$items = array();
 
-	// Check if videos is in repeater format (has video_desktop key)
-	$is_repeater_format = ! empty( $data['videos'] ) && is_array( $data['videos'] ) && isset( $data['videos'][0]['video_desktop'] );
-
-	// Add videos first (they take priority if autoplay works)
-	if ( $is_repeater_format ) {
-		foreach ( $data['videos'] as $index => $video_data ) {
-			$video_url = brace_yourself_get_video_url( $video_data );
-			if ( $video_url ) {
-				$items[] = array(
-					'type'  => 'video',
-					'url'   => $video_url,
-					'index' => $index,
-				);
-			}
+	// Add videos first (they take priority if autoplay works). ACF Free: array of { video_desktop, video_mobile }.
+	foreach ( $data['videos'] as $index => $video_data ) {
+		$video_url = brace_yourself_get_video_url( $video_data );
+		if ( $video_url ) {
+			$items[] = array(
+				'type'  => 'video',
+				'url'   => $video_url,
+				'index' => $index,
+			);
 		}
 	}
 
-	// Add images as fallback
+	// Add images (ACF Free: each item is { desktop, mobile }).
 	foreach ( $data['images'] as $index => $image ) {
-		// Check if image has desktop/mobile structure (ACF Free format)
-		if ( is_array( $image ) && isset( $image['desktop'] ) ) {
-			// ACF Free: Desktop/mobile image structure
-			$desktop_img = $image['desktop'];
-			$mobile_img = isset( $image['mobile'] ) && ! empty( $image['mobile'] ) ? $image['mobile'] : null;
-			
-			// Get appropriate image for current device
-			$is_mobile = brace_yourself_is_mobile();
-			if ( $is_mobile && $mobile_img ) {
-				$selected_image = $mobile_img;
-			} else {
-				$selected_image = $desktop_img;
-			}
-			
-			if ( is_array( $selected_image ) && isset( $selected_image['url'] ) ) {
-				// Get attachment ID to generate proper srcset
-				$attachment_id = isset( $selected_image['ID'] ) ? absint( $selected_image['ID'] ) : 0;
-				$srcset = '';
-				if ( $attachment_id ) {
-					$srcset = wp_get_attachment_image_srcset( $attachment_id, 'full' );
-				}
-				
-				$items[] = array(
-					'type'   => 'image',
-					'url'    => esc_url( $selected_image['url'] ),
-					'srcset' => $srcset ? $srcset : '',
-					'alt'    => '',
-					'index'  => count( $data['videos'] ) + $index,
-				);
-			} elseif ( is_numeric( $selected_image ) ) {
-				// Handle case where image is just an ID
-				$image_array = wp_get_attachment_image_src( $selected_image, 'full' );
-				if ( $image_array ) {
-					$items[] = array(
-						'type'   => 'image',
-						'url'    => esc_url( $image_array[0] ),
-						'srcset' => wp_get_attachment_image_srcset( $selected_image, 'full' ),
-						'alt'    => '',
-						'index'  => count( $data['videos'] ) + $index,
-					);
-				}
-			}
-		} elseif ( is_array( $image ) && isset( $image['url'] ) ) {
-			// ACF Pro: Gallery format (direct image array)
-			$attachment_id = isset( $image['ID'] ) ? absint( $image['ID'] ) : 0;
-			$srcset = '';
-			if ( $attachment_id ) {
-				$srcset = wp_get_attachment_image_srcset( $attachment_id, 'full' );
-			}
-			
+		if ( ! is_array( $image ) || ! isset( $image['desktop'] ) ) {
+			continue;
+		}
+		$desktop_img = $image['desktop'];
+		$mobile_img  = isset( $image['mobile'] ) && ! empty( $image['mobile'] ) ? $image['mobile'] : null;
+		$is_mobile   = brace_yourself_is_mobile();
+		$selected_image = ( $is_mobile && $mobile_img ) ? $mobile_img : $desktop_img;
+
+		if ( is_array( $selected_image ) && isset( $selected_image['url'] ) ) {
+			$attachment_id = isset( $selected_image['ID'] ) ? absint( $selected_image['ID'] ) : 0;
+			$srcset        = $attachment_id ? wp_get_attachment_image_srcset( $attachment_id, 'full' ) : '';
 			$items[] = array(
 				'type'   => 'image',
-				'url'    => esc_url( $image['url'] ),
+				'url'    => esc_url( $selected_image['url'] ),
 				'srcset' => $srcset ? $srcset : '',
 				'alt'    => '',
 				'index'  => count( $data['videos'] ) + $index,
 			);
-		} elseif ( is_numeric( $image ) ) {
-			// Handle case where image is just an ID
-			$image_array = wp_get_attachment_image_src( $image, 'full' );
+		} elseif ( is_numeric( $selected_image ) ) {
+			$image_array = wp_get_attachment_image_src( $selected_image, 'full' );
 			if ( $image_array ) {
 				$items[] = array(
 					'type'   => 'image',
 					'url'    => esc_url( $image_array[0] ),
-					'srcset' => wp_get_attachment_image_srcset( $image, 'full' ),
+					'srcset' => wp_get_attachment_image_srcset( $selected_image, 'full' ),
 					'alt'    => '',
 					'index'  => count( $data['videos'] ) + $index,
 				);

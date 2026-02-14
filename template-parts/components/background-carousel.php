@@ -5,11 +5,9 @@
  * Global background carousel for all pages. Displays images and videos
  * with CSS animations. Intensely blurred on inner pages, fully visible on homepage.
  *
- * ACF Fields (Options Page):
- * - carousel_images (gallery) - Fallback images if video autoplay fails
- * - carousel_videos (repeater) - Video items with desktop/mobile variants
- *   - video_desktop (file) - Desktop video file
- *   - video_mobile (file, optional) - Mobile video file
+ * ACF Free (Carousel Settings page):
+ * - carousel_image_1–4_desktop / _mobile - Fallback images if video autoplay fails
+ * - video_1_desktop, video_1_mobile, video_2_desktop, video_2_mobile - Video files
  *
  * @package Brace_Yourself
  */

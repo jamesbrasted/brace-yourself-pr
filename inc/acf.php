@@ -117,123 +117,56 @@ function brace_yourself_get_about_page_id() {
 }
 
 /**
- * Get carousel fields based on ACF version (Pro vs Free).
+ * Get carousel fields (ACF Free: image and file fields only).
  *
  * @return array Array of field definitions.
  */
 function brace_yourself_get_carousel_fields() {
 	$fields = array();
 
-	// Check if ACF Pro is available (repeater and gallery fields exist)
-	$is_acf_pro = function_exists( 'acf_get_field_type' ) && acf_get_field_type( 'repeater' );
-	$has_gallery = function_exists( 'acf_get_field_type' ) && acf_get_field_type( 'gallery' );
-
-	// Carousel Images - Gallery for Pro, multiple Image fields for Free
-	if ( $has_gallery ) {
-		// ACF Pro: Gallery field
+	// Images 1–4, each with Desktop and Mobile (Optional)
+	for ( $i = 1; $i <= 4; $i++ ) {
 		$fields[] = array(
-			'key'               => 'field_carousel_images',
-			'label'             => 'Carousel Images',
-			'name'              => 'carousel_images',
-			'type'              => 'gallery',
-			'instructions'      => 'Click "Add to gallery" to upload or select images. These will be used as fallback if videos cannot autoplay.',
+			'key'               => 'field_carousel_image_' . $i . '_desktop',
+			'label'             => 'Image ' . $i . ' - Desktop',
+			'name'              => 'carousel_image_' . $i . '_desktop',
+			'type'              => 'image',
+			'instructions'      => $i === 1 ? 'Desktop image for the carousel. This will be used as fallback if videos cannot autoplay.' : 'Optional: Additional desktop image.',
 			'return_format'     => 'array',
 			'preview_size'      => 'medium',
-			'insert'            => 'append',
 			'library'           => 'all',
-			'min'               => 0,
-			'max'               => 0,
+			'required'          => $i === 1 ? 1 : 0,
 		);
-	} else {
-		// ACF Free: 3 images, each with desktop and mobile variants
-		for ( $i = 1; $i <= 3; $i++ ) {
-			// Desktop image field
-			$fields[] = array(
-				'key'               => 'field_carousel_image_' . $i . '_desktop',
-				'label'             => 'Image ' . $i . ' - Desktop',
-				'name'              => 'carousel_image_' . $i . '_desktop',
-				'type'              => 'image',
-				'instructions'      => $i === 1 ? 'Desktop image for the carousel. This will be used as fallback if videos cannot autoplay.' : 'Optional: Additional desktop image.',
-				'return_format'     => 'array',
-				'preview_size'      => 'medium',
-				'library'           => 'all',
-				'required'          => $i === 1 ? 1 : 0,
-			);
-			
-			// Mobile image field
-			$fields[] = array(
-				'key'               => 'field_carousel_image_' . $i . '_mobile',
-				'label'             => 'Image ' . $i . ' - Mobile (Optional)',
-				'name'              => 'carousel_image_' . $i . '_mobile',
-				'type'              => 'image',
-				'instructions'      => 'Optional: Smaller mobile image. If not provided, desktop image will be used on mobile.',
-				'return_format'     => 'array',
-				'preview_size'      => 'medium',
-				'library'           => 'all',
-				'required'          => 0,
-			);
-		}
+		$fields[] = array(
+			'key'               => 'field_carousel_image_' . $i . '_mobile',
+			'label'             => 'Image ' . $i . ' - Mobile (Optional)',
+			'name'              => 'carousel_image_' . $i . '_mobile',
+			'type'              => 'image',
+			'instructions'      => 'Optional: Smaller mobile image. If not provided, desktop image will be used on mobile.',
+			'return_format'     => 'array',
+			'preview_size'      => 'medium',
+			'library'           => 'all',
+			'required'          => 0,
+		);
 	}
 
-	if ( $is_acf_pro ) {
-		// ACF Pro: Repeater field with desktop/mobile variants
+	// Video 1 and Video 2, each with Desktop and Mobile (Optional)
+	foreach ( array( 1, 2 ) as $n ) {
 		$fields[] = array(
-			'key'               => 'field_carousel_videos',
-			'label'             => 'Carousel Videos',
-			'name'              => 'carousel_videos',
-			'type'              => 'repeater',
-			'instructions'      => 'Add videos for the background carousel. Videos will autoplay, loop, and mute. If autoplay fails, images will be used.',
-			'layout'            => 'block',
-			'button_label'      => 'Add Video',
-			'sub_fields'        => array(
-				array(
-					'key'               => 'field_video_desktop',
-					'label'             => 'Desktop Video',
-					'name'              => 'video_desktop',
-					'type'              => 'file',
-					'instructions'      => 'Video file for desktop/tablet devices (MP4 recommended)',
-					'return_format'     => 'array',
-					'library'           => 'all',
-					'min_size'          => '',
-					'max_size'          => '',
-					'mime_types'        => 'mp4,webm',
-					'required'          => 1,
-				),
-				array(
-					'key'               => 'field_video_mobile',
-					'label'             => 'Mobile Video (Optional)',
-					'name'              => 'video_mobile',
-					'type'              => 'file',
-					'instructions'      => 'Optional: Smaller video file for mobile devices. If not provided, desktop video will be used.',
-					'return_format'     => 'array',
-					'library'           => 'all',
-					'min_size'          => '',
-					'max_size'          => '',
-					'mime_types'        => 'mp4,webm',
-					'required'          => 0,
-				),
-			),
-		);
-	} else {
-		// ACF Free: Single video with desktop and mobile variants
-		// Desktop video field
-		$fields[] = array(
-			'key'               => 'field_video_1_desktop',
-			'label'             => 'Video 1 - Desktop',
-			'name'              => 'video_1_desktop',
+			'key'               => 'field_video_' . $n . '_desktop',
+			'label'             => 'Video ' . $n . ' - Desktop',
+			'name'              => 'video_' . $n . '_desktop',
 			'type'              => 'file',
-			'instructions'      => 'Desktop video file (MP4 recommended). Leave empty if not using videos.',
+			'instructions'      => 1 === $n ? 'Desktop video file (MP4 recommended). Leave empty if not using videos.' : 'Optional: Second desktop video. Leave empty if not using a second video.',
 			'return_format'     => 'array',
 			'library'           => 'all',
 			'mime_types'        => 'mp4,webm',
 			'required'          => 0,
 		);
-		
-		// Mobile video field
 		$fields[] = array(
-			'key'               => 'field_video_1_mobile',
-			'label'             => 'Video 1 - Mobile (Optional)',
-			'name'              => 'video_1_mobile',
+			'key'               => 'field_video_' . $n . '_mobile',
+			'label'             => 'Video ' . $n . ' - Mobile (Optional)',
+			'name'              => 'video_' . $n . '_mobile',
 			'type'              => 'file',
 			'instructions'      => 'Optional: Smaller mobile video. If not provided, desktop video will be used on mobile.',
 			'return_format'     => 'array',
@@ -257,47 +190,32 @@ function brace_yourself_register_acf_field_groups() {
 		return;
 	}
 
-	// Background Carousel Field Group
-	// Location: Options page (ACF Pro) OR Carousel Settings page only (ACF Free)
-	$carousel_location = array();
-	
-	// Add options page location (ACF Pro)
-	if ( function_exists( 'acf_add_options_page' ) ) {
-		$carousel_location[] = array(
-			array(
-				'param'    => 'options_page',
-				'operator' => '==',
-				'value'    => 'theme-options',
-			),
-		);
-	}
-	
-	// Add Carousel Settings page location (ACF Free - only on settings page)
+	// Background Carousel Field Group (ACF Free: Carousel Settings page only)
 	$carousel_page_id = brace_yourself_get_carousel_settings_page_id();
 	if ( $carousel_page_id ) {
-		$carousel_location[] = array(
+		acf_add_local_field_group(
 			array(
-				'param'    => 'page',
-				'operator' => '==',
-				'value'    => $carousel_page_id,
-			),
+				'key'                   => 'group_background_carousel',
+				'title'                 => 'Background Carousel',
+				'fields'                => brace_yourself_get_carousel_fields(),
+				'location'              => array(
+					array(
+						array(
+							'param'    => 'page',
+							'operator' => '==',
+							'value'    => $carousel_page_id,
+						),
+					),
+				),
+				'active'                => 1,
+				'menu_order'            => 0,
+				'position'              => 'normal',
+				'style'                 => 'default',
+				'label_placement'       => 'top',
+				'instruction_placement' => 'label',
+			)
 		);
 	}
-
-	acf_add_local_field_group(
-		array(
-			'key'                   => 'group_background_carousel',
-			'title'                 => 'Background Carousel',
-			'fields'                => brace_yourself_get_carousel_fields(),
-			'location'              => $carousel_location,
-			'active'                => 1,
-			'menu_order'            => 0,
-			'position'              => 'normal',
-			'style'                 => 'default',
-			'label_placement'       => 'top',
-			'instruction_placement' => 'label',
-		)
-	);
 
 	// Footer Settings Field Group
 	// Location: Footer Settings page only (ACF Free settings page).

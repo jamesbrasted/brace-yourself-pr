@@ -181,7 +181,25 @@ add_filter( 'wp_get_nav_menu_items', 'brace_yourself_limit_primary_menu_items', 
 // No footer widget limiting needed; footer content is managed via ACF.
 
 /**
- * Get the list of page IDs that are ACF-only (no content editor).
+ * Get the Roster page ID (the page using the Roster template).
+ * Content is built from the Artist post type; the page itself needs no editor.
+ *
+ * @return int|false Page ID or false if no page uses the Roster template.
+ */
+function brace_yourself_get_roster_page_id() {
+	$pages = get_pages(
+		array(
+			'meta_key'   => '_wp_page_template',
+			'meta_value' => 'page-roster.php',
+			'number'     => 1,
+		)
+	);
+	return ! empty( $pages ) ? (int) $pages[0]->ID : false;
+}
+
+/**
+ * Get the list of page IDs that do not use the content editor.
+ * (ACF-only pages plus template-only pages like Roster.)
  *
  * @return int[] Array of page IDs.
  */
@@ -210,6 +228,10 @@ function brace_yourself_get_acf_only_page_ids() {
 			$ids[] = (int) $about_page_id;
 		}
 	}
+	$roster_page_id = brace_yourself_get_roster_page_id();
+	if ( $roster_page_id ) {
+		$ids[] = (int) $roster_page_id;
+	}
 
 	return $ids;
 }
@@ -236,6 +258,7 @@ add_filter( 'use_block_editor_for_post', 'brace_yourself_disable_block_editor_fo
  * - Carousel Settings page (ACF Free compatibility)
  * - Footer Settings page
  * - About page (page with slug "about")
+ * - Roster page (page using the Roster template; content is from Artist CPT)
  *
  * @return bool True if editing an ACF-only page, false otherwise.
  */
