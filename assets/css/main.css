@@ -644,6 +644,9 @@ a:focus-visible {
 	top: 0;
 	z-index: 100;
 	padding: 0 var(--space-400);
+	/* Prevent flex stretch so sticky sticks to viewport, not flex container */
+	align-self: flex-start;
+	width: 100%;
 }
 
 .site-main {
@@ -1312,6 +1315,13 @@ body.about-page #page {
 
 body.roster-page .site-main {
 	padding: var(--space-800) var(--space-600);
+}
+
+/* Isolate roster layout so preview images don't affect sticky nav containing block */
+@media (max-width: 767px) {
+	body.roster-page .site-main {
+		contain: layout;
+	}
 }
 
 @media (min-width: 768px) {
