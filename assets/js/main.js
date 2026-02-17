@@ -216,6 +216,7 @@
 			function updatePreviewTransform(li, preview, x, y) {
 				const liRect = li.getBoundingClientRect();
 				const imgRect = preview.getBoundingClientRect();
+				if (imgRect.width === 0 || imgRect.height === 0) return;
 				const relX = x - liRect.left;
 				const relY = y - liRect.top;
 				const tx = relX - imgRect.width / 2;

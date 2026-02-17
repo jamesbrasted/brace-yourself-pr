@@ -116,9 +116,13 @@ add_filter( 'wp_get_attachment_image_attributes', 'brace_yourself_lazy_load_imag
  * Ensures proper srcset and sizes attributes for performance.
  */
 function brace_yourself_responsive_image_sizes( $attr, $attachment, $size ) {
-	// Ensure sizes attribute is set for better srcset selection
 	if ( ! isset( $attr['sizes'] ) && wp_attachment_is_image( $attachment->ID ) ) {
-		$attr['sizes'] = '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px';
+		// Roster artist preview: display is 52vw on mobile, ~90vw on desktop (see .artist__preview in main.css).
+		if ( $size === 'artist-preview' ) {
+			$attr['sizes'] = '(max-width: 767px) 52vw, 90vw';
+		} else {
+			$attr['sizes'] = '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px';
+		}
 	}
 
 	return $attr;

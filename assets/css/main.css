@@ -146,6 +146,11 @@ body {
 	--scale-800: 3.003843rem; /* 48.06px */
 	--scale-900: 4.247433rem; /* 67.96px */
 	--scale-1000: 6.005871rem; /* 96.09px */
+	--scale-1100: 8.492302rem; /* 135.88px */
+	--scale-1200: 12.008114rem; /* 192.13px */
+	--scale-1300: 16.979474rem; /* 271.65px */
+	--scale-1400: 24.008976rem; /* 384.15px */
+	--scale-1500: 33.948692rem; /* 542.46px */
 
 	/* ========================================
 	   COLOR SYSTEM
@@ -177,6 +182,10 @@ body {
 	--space-900: var(--scale-800);  /* 3.003843rem / 48.06px */
 	--space-1000: var(--scale-900); /* 4.247433rem / 67.96px */
 	--space-1100: var(--scale-1000); /* 6.005871rem / 96.09px */
+	--space-1200: var(--scale-1100); /* 8.492302rem / 135.88px */
+	--space-1300: var(--scale-1200); /* 12.008114rem / 192.13px */
+	--space-1400: var(--scale-1300); /* 16.979474rem / 271.65px */
+	--space-1500: var(--scale-1400); /* 24.008976rem / 384.15px */
 
 	/* ========================================
 	   TYPOGRAPHY SCALE
@@ -483,6 +492,10 @@ h6 {
 	.text-body-lg, .text-body {
 		line-height: var(--line-height-relaxed);
 	}
+
+	.text-caption {
+		letter-spacing: var(--letter-spacing-normal);
+	}
 }
 
 @media (max-width: 375px) {
@@ -594,6 +607,12 @@ a:focus-visible {
 	gap: 0.5vw;
 	animation: ticker-tape 30s linear infinite;
 	will-change: transform;
+}
+
+@media (max-width: 767px) {
+	.site-title__ticker {
+		animation-duration: 12s;
+	}
 }
 
 .site-title__svg--mobile {
@@ -1249,7 +1268,7 @@ body.home {
 	}
 	.homepage-intro__text {
 		/* Span the middle 7 columns (columns 3-9) of a 12-column grid */
-		grid-column: 3 / span 7;
+		grid-column: 2 / span 8;
 	}
 }
 
@@ -1372,6 +1391,8 @@ a.artist__name {
 	opacity: 0;
 	transition: opacity 0.2s ease;
 	transform: translate3d(0, 0, 0);
+	will-change: transform;
+	backface-visibility: hidden;
 }
 
 /* Preview visible state (hover on desktop, .is-visible on mobile) */
@@ -1403,7 +1424,7 @@ a.artist__name {
 
 @media (max-width: 767px) {
 	.roster {
-		gap: var(--space-1000);
+		gap: var(--space-600);
 	}
 
 	.artist__name,
@@ -1440,8 +1461,8 @@ a.artist__name {
 	/* Preview size; alignment (left/center/right) set randomly by JS */
 	.artist__item.is-visible .artist__preview {
 		top: 50%;
-		max-width: min(52vw, calc(2 * var(--scale-1000)));
-		max-height: min(48vh, calc(2 * var(--scale-1000)));
+		max-width: min(46vw, calc(var(--scale-1000) + var(--scale-900)));
+		max-height: min(42vh, calc(var(--scale-1000) + var(--scale-900)));
 	}
 
 	.artist__item.is-visible.preview-align-left .artist__preview {
