@@ -61,14 +61,16 @@ $artist_query = new WP_Query(
 								$link_attrs = ( $has_link && strpos( $link, home_url() ) !== 0 ) ? ' rel="noopener noreferrer" target="_blank"' : '';
 								?>
 								<li class="artist__item">
-									<?php if ( $has_link ) : ?>
-										<a href="<?php echo esc_url( $link ); ?>" class="artist__name"<?php echo $link_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>><?php echo esc_html( get_the_title() ); ?></a>
-									<?php else : ?>
-										<span class="artist__name"><?php echo esc_html( get_the_title() ); ?></span>
-									<?php endif; ?>
-									<?php if ( $has_sub ) : ?>
-										<span class="artist__subtitle text-caption"><?php echo esc_html( trim( $subtitle ) ); ?></span>
-									<?php endif; ?>
+									<span class="artist__heading">
+										<?php if ( $has_link ) : ?>
+											<a href="<?php echo esc_url( $link ); ?>" class="artist__name"<?php echo $link_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>><?php echo esc_html( get_the_title() ); ?></a>
+										<?php else : ?>
+											<span class="artist__name"><?php echo esc_html( get_the_title() ); ?></span>
+										<?php endif; ?>
+										<?php if ( $has_sub ) : ?>
+											<span class="artist__subtitle text-caption"><?php echo esc_html( trim( $subtitle ) ); ?></span>
+										<?php endif; ?>
+									</span>
 									<?php
 									if ( $has_image ) {
 										echo wp_get_attachment_image(
