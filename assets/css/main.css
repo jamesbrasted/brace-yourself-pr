@@ -1414,9 +1414,8 @@ a.artist__name {
 	backface-visibility: hidden;
 }
 
-/* Preview visible state (hover on desktop, .is-visible on mobile) */
-.artist__item:hover .artist__preview,
-.artist__item.is-visible .artist__preview {
+/* Preview visible state (hover on desktop) */
+.artist__item:hover .artist__preview {
 	width: auto;
 	height: auto;
 	min-width: 0;
@@ -1426,13 +1425,8 @@ a.artist__name {
 	object-fit: contain;
 }
 
-/* Desktop: only fade in after JS has set position to avoid flicker at (0,0) */
+/* Only fade in after JS has set position to avoid flicker at (0,0) */
 .artist__item:hover .artist__preview.artist__preview--positioned {
-	opacity: 1;
-}
-
-/* Mobile: always show when .is-visible (no cursor positioning) */
-.artist__item.is-visible .artist__preview {
 	opacity: 1;
 }
 
@@ -1487,50 +1481,13 @@ a.artist__name {
 		font-size: var(--text-sm);
 	}
 
+	/* Artist preview hidden on mobile */
 	.artist__preview {
-		transition: opacity 0.35s ease-out, transform 0.35s ease-out;
+		display: none;
 	}
 
 	.artist__item {
 		gap: var(--space-100);
-	}
-
-	/* Start position for animate-in: from left/right/bottom depending on alignment */
-	.artist__item.preview-align-left:not(.is-visible) .artist__preview {
-		transform: translate(calc(-1 * var(--scale-1000)), -50%);
-	}
-
-	.artist__item.preview-align-center:not(.is-visible) .artist__preview {
-		transform: translate(-50%, var(--scale-800));
-	}
-
-	.artist__item.preview-align-right:not(.is-visible) .artist__preview {
-		transform: translate(var(--scale-1000), -50%);
-	}
-
-	/* Preview size; alignment (left/center/right) set randomly by JS */
-	.artist__item.is-visible .artist__preview {
-		top: 50%;
-		max-width: min(46vw, calc(var(--scale-1000) + var(--scale-900)));
-		max-height: min(42vh, calc(var(--scale-1000) + var(--scale-900)));
-	}
-
-	.artist__item.is-visible.preview-align-left .artist__preview {
-		left: 0;
-		right: auto;
-		transform: translateY(-50%);
-	}
-
-	.artist__item.is-visible.preview-align-center .artist__preview {
-		left: 50%;
-		right: auto;
-		transform: translate(-50%, -50%);
-	}
-
-	.artist__item.is-visible.preview-align-right .artist__preview {
-		left: auto;
-		right: 0;
-		transform: translateY(-50%);
 	}
 }
 

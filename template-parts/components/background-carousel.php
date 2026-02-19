@@ -42,7 +42,7 @@ $total_items = count( $carousel_items );
 $random_offset = ( $total_items > 1 ) ? wp_rand( 0, $total_items - 1 ) * $slide_duration : 0;
 ?>
 <div 
-	class="background-carousel <?php echo $is_homepage ? 'background-carousel--homepage' : 'background-carousel--inner'; ?>"
+	class="background-carousel <?php echo esc_attr( $is_homepage ? 'background-carousel--homepage' : 'background-carousel--inner' ); ?>"
 	data-slide-duration="<?php echo esc_attr( $slide_duration ); ?>"
 	data-total-items="<?php echo esc_attr( $total_items ); ?>"
 	style="--slide-duration: <?php echo esc_attr( $slide_duration ); ?>ms; --total-duration: <?php echo esc_attr( $total_items * $slide_duration ); ?>ms; --carousel-offset: -<?php echo esc_attr( $random_offset ); ?>ms;"
@@ -65,7 +65,7 @@ $random_offset = ( $total_items > 1 ) ? wp_rand( 0, $total_items - 1 ) * $slide_
 					loop
 					muted
 					playsinline
-					preload="<?php echo $is_first ? 'auto' : 'none'; ?>"
+					preload="<?php echo esc_attr( $is_first ? 'auto' : 'none' ); ?>"
 					data-video-index="<?php echo esc_attr( $index ); ?>"
 					data-video-src="<?php echo esc_url( $item['url'] ); ?>"
 					style="animation-name: <?php echo esc_attr( $animation_name ); ?>;"
@@ -89,8 +89,8 @@ $random_offset = ( $total_items > 1 ) ? wp_rand( 0, $total_items - 1 ) * $slide_
 						sizes="100vw"
 					<?php endif; ?>
 					alt=""
-					loading="<?php echo $is_first ? 'eager' : 'lazy'; ?>"
-					decoding="<?php echo $is_first ? 'sync' : 'async'; ?>"
+					loading="<?php echo esc_attr( $is_first ? 'eager' : 'lazy' ); ?>"
+					decoding="<?php echo esc_attr( $is_first ? 'sync' : 'async' ); ?>"
 					<?php if ( $is_first ) : ?>
 						fetchpriority="high"
 					<?php endif; ?>

@@ -68,7 +68,10 @@ function brace_yourself_preload_critical_assets() {
 	}
 	echo '<link rel="preload" href="' . esc_url( $css_url ) . '" as="style">' . "\n";
 
-	// Primary heading font (Pilat Bold) – improves LCP text rendering.
-	echo '<link rel="preload" href="' . esc_url( BRACE_YOURSELF_TEMPLATE_URI . '/assets/fonts/Pilat-Bold.woff2' ) . '" as="font" type="font/woff2" crossorigin>' . "\n";
+	// Primary heading font (Pilat Bold) – improves LCP text rendering (only if file exists).
+	$font_path = BRACE_YOURSELF_TEMPLATE_DIR . '/assets/fonts/Pilat-Bold.woff2';
+	if ( file_exists( $font_path ) ) {
+		echo '<link rel="preload" href="' . esc_url( BRACE_YOURSELF_TEMPLATE_URI . '/assets/fonts/Pilat-Bold.woff2' ) . '" as="font" type="font/woff2" crossorigin>' . "\n";
+	}
 }
 add_action( 'wp_head', 'brace_yourself_preload_critical_assets', 1 );

@@ -3,7 +3,7 @@
  *
  * Minimal vanilla JS — only what CSS cannot handle.
  * Carousel: autoplay detection, lazy loading, pause-on-hidden.
- * Roster: hover preview (cursor follow) and viewport visibility on mobile.
+ * Roster: hover preview (cursor follow) on desktop only; hidden on mobile.
  * Custom cursor: desktop homepage only (lerp, hover/click states); disabled on touch and reduced-motion.
  *
  * @package Brace_Yourself
@@ -178,8 +178,8 @@
 	}
 
 	/**
-	 * Roster (artist list): hover preview follows cursor on desktop,
-	 * IntersectionObserver toggles .is-visible on mobile.
+	 * Roster (artist list): hover preview follows cursor on desktop only.
+	 * Preview is hidden on mobile.
 	 */
 	function initRoster() {
 		const rosterEl = document.querySelector('.roster[data-module="roster"]');
@@ -192,30 +192,13 @@
 
 		if (itemsWithPreview.length === 0) return;
 
-		const alignments = ['preview-align-left', 'preview-align-center', 'preview-align-right'];
-		let prevAlignment = null;
-		itemsWithPreview.forEach(({ li }) => {
-			const choices = prevAlignment
-				? alignments.filter((a) => a !== prevAlignment)
-				: alignments;
-			const alignment = choices[Math.floor(Math.random() * choices.length)];
-			li.classList.add(alignment);
-			prevAlignment = alignment;
-		});
-
 		const desktop = window.matchMedia('(hover: hover) and (pointer: fine)');
-		const mobile = window.matchMedia('(hover: none)');
 		let teardownDesktop = null;
-		let teardownMobile = null;
 
 		function setupDesktop() {
-			if (teardownMobile) {
-				teardownMobile();
-				teardownMobile = null;
-			}
 			let rafId = null;
 
-				function updatePreviewTransform(li, preview, x, y) {
+			function updatePreviewTransform(li, preview, x, y) {
 				const liRect = li.getBoundingClientRect();
 				const imgRect = preview.getBoundingClientRect();
 				if (imgRect.width === 0 || imgRect.height === 0) {
@@ -261,31 +244,15 @@
 			};
 		}
 
-		function setupMobile() {
+		if (desktop.matches) setupDesktop();
+
+		desktop.addEventListener('change', (e) => {
 			if (teardownDesktop) {
 				teardownDesktop();
 				teardownDesktop = null;
 			}
-			const observer = new IntersectionObserver(
-				(entries) => {
-					entries.forEach((entry) => {
-						entry.target.classList.toggle('is-visible', entry.isIntersecting);
-					});
-				},
-				{ root: null, rootMargin: '0px', threshold: 0.1 }
-			);
-			itemsWithPreview.forEach(({ li }) => observer.observe(li));
-			teardownMobile = () => {
-				observer.disconnect();
-				itemsWithPreview.forEach(({ li }) => li.classList.remove('is-visible'));
-			};
-		}
-
-		if (desktop.matches) setupDesktop();
-		else if (mobile.matches) setupMobile();
-
-		desktop.addEventListener('change', (e) => { if (e.matches) setupDesktop(); });
-		mobile.addEventListener('change', (e) => { if (e.matches) setupMobile(); });
+			if (e.matches) setupDesktop();
+		});
 	}
 
 	/**

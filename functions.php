@@ -32,6 +32,9 @@ require_once BRACE_YOURSELF_TEMPLATE_DIR . '/inc/acf.php';
 // Load performance optimizations
 require_once BRACE_YOURSELF_TEMPLATE_DIR . '/inc/performance.php';
 
+// Load SEO (JSON-LD, Open Graph) — no output when Yoast/Rank Math active
+require_once BRACE_YOURSELF_TEMPLATE_DIR . '/inc/seo.php';
+
 // Load template tags
 require_once BRACE_YOURSELF_TEMPLATE_DIR . '/inc/template-tags.php';
 

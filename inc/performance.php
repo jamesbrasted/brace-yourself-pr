@@ -48,12 +48,6 @@ function brace_yourself_disable_embeds() {
 
 	// Remove filter of the oEmbed result before any HTTP request is made
 	remove_filter( 'oembed_dataparse', 'wp_filter_oembed_result', 10 );
-
-	// Remove oEmbed discovery links
-	remove_action( 'wp_head', 'wp_oembed_add_discovery_links' );
-
-	// Remove oEmbed-specific JavaScript from the front-end and back-end
-	remove_action( 'wp_head', 'wp_oembed_add_host_js' );
 }
 add_action( 'init', 'brace_yourself_disable_embeds', 9999 );
 
@@ -117,9 +111,9 @@ add_filter( 'wp_get_attachment_image_attributes', 'brace_yourself_lazy_load_imag
  */
 function brace_yourself_responsive_image_sizes( $attr, $attachment, $size ) {
 	if ( ! isset( $attr['sizes'] ) && wp_attachment_is_image( $attachment->ID ) ) {
-		// Roster artist preview: display is 52vw on mobile, ~90vw on desktop (see .artist__preview in main.css).
+		// Roster artist preview: desktop only, ~90vw (hidden on mobile; see .artist__preview in main.css).
 		if ( $size === 'artist-preview' ) {
-			$attr['sizes'] = '(max-width: 767px) 52vw, 90vw';
+			$attr['sizes'] = '90vw';
 		} else {
 			$attr['sizes'] = '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px';
 		}
