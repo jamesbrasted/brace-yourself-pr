@@ -1408,7 +1408,7 @@ a.artist__name {
 	min-height: 0;
 	overflow: hidden;
 	opacity: 0;
-	transition: opacity 0.2s ease;
+	transition: opacity var(--duration-fast) var(--ease-standard);
 	transform: translate3d(0, 0, 0);
 	will-change: transform;
 	backface-visibility: hidden;
@@ -1424,6 +1424,15 @@ a.artist__name {
 	max-width: min(90vw, calc(6 * var(--scale-1000)));
 	max-height: min(90vh, calc(6 * var(--scale-1000)));
 	object-fit: contain;
+}
+
+/* Desktop: only fade in after JS has set position to avoid flicker at (0,0) */
+.artist__item:hover .artist__preview.artist__preview--positioned {
+	opacity: 1;
+}
+
+/* Mobile: always show when .is-visible (no cursor positioning) */
+.artist__item.is-visible .artist__preview {
 	opacity: 1;
 }
 
@@ -1582,9 +1591,25 @@ a.artist__name {
 		pointer-events: none;
 		z-index: 9999;
 		will-change: transform;
-		contain: layout style paint;
+		contain: layout style;
+		isolation: isolate;
 		opacity: 0;
 		transition: opacity 0.15s ease-out;
+	}
+	.custom-cursor__inner {
+		width: 100%;
+		height: 100%;
+		transform-origin: center center;
+		transition: transform var(--duration-fast) var(--ease-standard);
+	}
+	.custom-cursor.is-hover {
+		mix-blend-mode: difference;
+	}
+	.custom-cursor.is-hover .custom-cursor__inner {
+		transform: scale(1.1);
+	}
+	.custom-cursor.is-clicking .custom-cursor__inner {
+		transform: scale(0.92);
 	}
 	.custom-cursor.is-visible {
 		opacity: 1;
