@@ -271,7 +271,7 @@ body {
 	--ease-out: cubic-bezier(0, 0, 0.2, 1);
 	--ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 
-	--duration-fast: 150ms;
+	--duration-fast: 100ms;
 	--duration-base: 250ms;
 	--duration-slow: 400ms;
 	--duration-carousel: 7000ms; /* 7 seconds - carousel slide duration */
@@ -458,7 +458,7 @@ h6 {
 	font-size: var(--font-caption);
 	font-weight: 700;
 	letter-spacing: var(--letter-spacing-wide);
-	line-height: var(--line-height-relaxed);
+	line-height: var(--line-height-base);
 	text-transform: uppercase;
 }
 
@@ -663,7 +663,7 @@ a:focus-visible {
 	position: sticky;
 	top: 0;
 	z-index: 100;
-	padding: 0 var(--space-400);
+	padding: var(--space-400);
 	/* Prevent flex stretch so sticky sticks to viewport, not flex container */
 	align-self: flex-start;
 	width: 100%;
@@ -720,6 +720,7 @@ a:focus-visible {
 	display: flex;
 	align-items: center;
 	position: relative;
+	transition: color var(--duration-base) var(--ease-standard);
 }
 
 .primary-menu a {
@@ -729,9 +730,28 @@ a:focus-visible {
 	color: var(--color-text);
 	text-decoration: none;
 	position: relative;
-	padding: var(--space-500) 0 var(--space-500) var(--space-800);
+	z-index: 0;
+	padding-left: var(--space-800);
+	background: transparent;
+	background-repeat: no-repeat;
+	background-position: var(--scale-400) 50%;
+	background-size: var(--scale-200) var(--scale-200);
+	transition: color var(--duration-fast) var(--ease-standard),
+				background var(--duration-fast) var(--ease-standard),
+				box-shadow var(--duration-fast) var(--ease-standard);
 }
 
+.primary-menu a:hover,
+.primary-menu a:focus-visible {
+	color: var(--near-black);
+	background-color: var(--lime);
+	background-image: radial-gradient(circle at center, currentColor 0, currentColor calc(var(--scale-200) / 2), transparent calc(var(--scale-200) / 2));
+	background-position: var(--scale-400) 50%;
+	background-size: var(--scale-200) var(--scale-200);
+	box-shadow: 0 0 0 var(--space-200) var(--lime);
+}
+
+/* Bracket + dot: [ • ] — opening bracket, dot via link background (unified with footer column links), closing bracket */
 /* Opening bracket */
 .primary-menu a::before {
 	content: "[";
@@ -758,13 +778,22 @@ a:focus-visible {
 	line-height: 1;
 }
 
+/* Dot (circle) between brackets: same as footer – radial-gradient on link so one approach for nav and footer column links */
+.primary-menu .current-menu-item > a,
+.primary-menu .current_page_item > a,
+.primary-menu .current-menu-ancestor > a {
+	background-image: radial-gradient(circle at center, currentColor 0, currentColor calc(var(--scale-200) / 2), transparent calc(var(--scale-200) / 2));
+	background-position: var(--scale-400) 50%;
+	background-size: var(--scale-200) var(--scale-200);
+}
+
 .primary-menu.is-open {
 	display: grid;
 }
 
 @media (min-width: 768px) {
 	.main-navigation {
-		padding: 0 var(--space-600);
+		padding: var(--space-400) var(--space-600);
 	}
 	.site-main {
 		padding: var(--space-600);
@@ -843,6 +872,10 @@ a:focus-visible {
 	text-align: left;
 }
 
+.site-footer__inner .site-footer__column p:has(a):not(:last-child) {
+	margin-bottom: var(--space-200);
+}
+
 /* Footer columns: map to nav-style positions */
 .site-footer__column--1 {
 	grid-column: 1;
@@ -904,9 +937,20 @@ a:focus-visible {
 .footer-menu a {
 	color: rgba(255, 255, 255, 0.7);
 	text-decoration: none;
+	background: transparent;
+	transition: color var(--duration-fast) var(--ease-standard),
+				background var(--duration-fast) var(--ease-standard),
+				box-shadow var(--duration-fast) var(--ease-standard);
 }
 
-/* Footer column links: same bracket treatment as primary nav */
+.footer-menu a:hover,
+.footer-menu a:focus-visible {
+	color: var(--near-black);
+	background-color: var(--lime);
+	box-shadow: 0 0 0 var(--space-200) var(--lime);
+}
+
+/* Footer column links: same bracket + dot treatment as primary nav (no li wrapper, so dot is link background) */
 .site-footer__inner .site-footer__column a {
 	display: inline-flex;
 	align-items: center;
@@ -914,6 +958,13 @@ a:focus-visible {
 	padding-left: var(--space-800);
 	color: var(--color-text);
 	text-decoration: none;
+	background: transparent;
+	background-repeat: no-repeat;
+	background-position: var(--scale-400) 50%;
+	background-size: var(--scale-200) var(--scale-200);
+	transition: color var(--duration-fast) var(--ease-standard),
+				background var(--duration-fast) var(--ease-standard),
+				box-shadow var(--duration-fast) var(--ease-standard);
 }
 
 /* Opening bracket */
@@ -940,6 +991,16 @@ a:focus-visible {
 	font-size: inherit;
 	color: currentColor;
 	line-height: 1;
+}
+
+.site-footer__inner .site-footer__column a:hover,
+.site-footer__inner .site-footer__column a:focus-visible {
+	color: var(--near-black);
+	background-color: var(--lime);
+	background-image: radial-gradient(circle at center, currentColor 0, currentColor calc(var(--scale-200) / 2), transparent calc(var(--scale-200) / 2));
+	background-position: var(--scale-400) 50%;
+	background-size: var(--scale-200) var(--scale-200);
+	box-shadow: 0 0 0 var(--space-200) var(--lime);
 }
 
 /* Entry Content */
