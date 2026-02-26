@@ -1562,9 +1562,6 @@ a.artist__name {
 	.custom-cursor.is-hover {
 		mix-blend-mode: difference;
 	}
-	.custom-cursor.is-hover .custom-cursor__inner {
-		transform: scale(1.1);
-	}
 	.custom-cursor.is-clicking .custom-cursor__inner {
 		transform: scale(0.92);
 	}
