@@ -595,6 +595,13 @@ a:focus-visible {
 	box-sizing: border-box;
 }
 
+/* Ensure logo respects device safe areas (e.g. iPhone notches / Dynamic Island) */
+@supports (padding: max(0px)) {
+	.site-branding {
+		padding-top: max(env(safe-area-inset-top, 0px), var(--space-400));
+	}
+}
+
 .site-title {
 	margin: 0;
 	line-height: 1;
@@ -1219,16 +1226,18 @@ a:focus-visible {
 	min-height: 100vh;
 }
 
-/* Frontpage: Exactly one viewport, no scroll (use 100dvh so mobile address bar doesn't add scroll) */
+/* Frontpage: one visible viewport, but allow natural scroll on real devices */
 body.home {
-	height: 100vh;
-	height: 100dvh;
-	overflow: hidden;
+	min-height: 100vh;
+	min-height: 100dvh;
+	min-height: 100svh;
+	overflow-x: hidden;
+	overflow-y: auto;
 }
 
 .home #page {
-	height: 100%;
-	overflow: hidden;
+	min-height: 100%;
+	overflow: visible;
 }
 
 
@@ -1275,6 +1284,13 @@ body.home {
 	gap: var(--space-400);
 }
 
+@supports (padding: max(0px)) {
+	/* Keep intro text clear of home indicator / rounded corners on edge-to-edge devices */
+	.homepage-intro__container {
+		padding-bottom: max(env(safe-area-inset-bottom, 0px), var(--space-600));
+	}
+}
+
 .homepage-intro__text {
 	margin: 0;
 	text-align: center;
@@ -1305,20 +1321,22 @@ body.home {
    CENTERED LAYOUT (viewport-centered content)
    ======================================== */
 
-/* About/centered pages: exactly one viewport tall so footer sits on viewport bottom, but don't hide overflow */
+/* About/centered pages: match visible viewport height with correct mobile behavior */
 #page:has(.site-main--centered) {
-	height: 100vh;
-	height: 100dvh;
+	min-height: 100vh;
+	min-height: 100dvh;
+	min-height: 100svh;
 }
 
 /* About page: body class added by page-about.php so layout still works where :has() isn't supported */
 body.about-page {
-	height: 100vh;
-	height: 100dvh;
+	min-height: 100vh;
+	min-height: 100dvh;
+	min-height: 100svh;
 }
 
 body.about-page #page {
-	height: 100%;
+	min-height: 100%;
 }
 
 .site-main--centered {
