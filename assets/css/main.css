@@ -165,7 +165,7 @@ body {
 	/* Semantic Color Aliases (Use these in components) */
 	--color-bg: var(--near-black);
 	--color-text: var(--pure-white);
-	--color-accent: var(--crimson-red);
+	--color-accent: var(--lime);
 
 	/* ========================================
 	   SPACING SCALE
@@ -608,6 +608,9 @@ a:focus-visible {
 	gap: 0.5vw;
 	animation: ticker-tape 30s linear infinite;
 	will-change: transform;
+	transform: translate3d(0, 0, 0);
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
 }
 
 @media (max-width: 767px) {
@@ -652,10 +655,10 @@ a:focus-visible {
 /* Translates by exactly one pattern (250vw copy + 0.5vw gap) for seamless loop */
 @keyframes ticker-tape {
 	0% {
-		transform: translateX(0);
+		transform: translate3d(0, 0, 0);
 	}
 	100% {
-		transform: translateX(calc(-250vw - 0.5vw));
+		transform: translate3d(calc(-250vw - 0.5vw), 0, 0);
 	}
 }
 
@@ -744,11 +747,11 @@ a:focus-visible {
 .primary-menu a:hover,
 .primary-menu a:focus-visible {
 	color: var(--near-black);
-	background-color: var(--lime);
+	background-color: var(--color-accent);
 	background-image: radial-gradient(circle at center, currentColor 0, currentColor calc(var(--scale-200) / 2), transparent calc(var(--scale-200) / 2));
 	background-position: var(--scale-400) 50%;
 	background-size: var(--scale-200) var(--scale-200);
-	box-shadow: 0 0 0 var(--space-200) var(--lime);
+	box-shadow: 0 0 0 var(--space-200) var(--color-accent);
 }
 
 /* Bracket + dot: [ • ] — opening bracket, dot via link background (unified with footer column links), closing bracket */
@@ -946,8 +949,8 @@ a:focus-visible {
 .footer-menu a:hover,
 .footer-menu a:focus-visible {
 	color: var(--near-black);
-	background-color: var(--lime);
-	box-shadow: 0 0 0 var(--space-200) var(--lime);
+	background-color: var(--color-accent);
+	box-shadow: 0 0 0 var(--space-200) var(--color-accent);
 }
 
 /* Footer column links: same bracket + dot treatment as primary nav (no li wrapper, so dot is link background) */
@@ -996,11 +999,11 @@ a:focus-visible {
 .site-footer__inner .site-footer__column a:hover,
 .site-footer__inner .site-footer__column a:focus-visible {
 	color: var(--near-black);
-	background-color: var(--lime);
+	background-color: var(--color-accent);
 	background-image: radial-gradient(circle at center, currentColor 0, currentColor calc(var(--scale-200) / 2), transparent calc(var(--scale-200) / 2));
 	background-position: var(--scale-400) 50%;
 	background-size: var(--scale-200) var(--scale-200);
-	box-shadow: 0 0 0 var(--space-200) var(--lime);
+	box-shadow: 0 0 0 var(--space-200) var(--color-accent);
 }
 
 /* Entry Content */
@@ -1301,23 +1304,20 @@ body.home {
    CENTERED LAYOUT (viewport-centered content)
    ======================================== */
 
-/* About/centered pages: one viewport tall, no scroll — #page is flex column, main takes remaining space */
+/* About/centered pages: exactly one viewport tall so footer sits on viewport bottom, but don't hide overflow */
 #page:has(.site-main--centered) {
 	height: 100vh;
 	height: 100dvh;
-	overflow: hidden;
 }
 
-/* About page: body class added by page-about.php so lock works even when :has() isn't applied */
+/* About page: body class added by page-about.php so layout still works where :has() isn't supported */
 body.about-page {
 	height: 100vh;
 	height: 100dvh;
-	overflow: hidden;
 }
 
 body.about-page #page {
 	height: 100%;
-	overflow: hidden;
 }
 
 .site-main--centered {
@@ -1464,7 +1464,7 @@ a.artist__name {
 
 @media (max-width: 767px) {
 	.roster {
-		gap: var(--space-600);
+		gap: var(--space-400);
 	}
 
 	.artist__heading {
@@ -1508,15 +1508,15 @@ a.artist__name {
 	}
 }
 
-/* Mobile / tablet: centered inline SVG via real div (scale-1200 width, aspect 193:281) */
+/* Mobile / tablet: centered inline SVG via real div (scale-1100 width, aspect 193:281) */
 @media (max-width: 767px) {
 	.home .homepage-cursor-mobile {
 		position: fixed;
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
-		width: var(--scale-1200);
-		height: calc(var(--scale-1200) * 281 / 193);
+		width: var(--scale-1100);
+		height: calc(var(--scale-1100) * 281 / 193);
 		pointer-events: none;
 		z-index: 1000;
 	}
@@ -1538,13 +1538,13 @@ a.artist__name {
 		cursor: none !important;
 	}
 
-	/* scale-1300 width, aspect 193:281 from SVG viewBox */
+	/* scale-1200 width, aspect 193:281 from SVG viewBox */
 	.custom-cursor {
 		position: fixed;
 		top: 0;
 		left: 0;
-		width: var(--scale-1300);
-		height: calc(var(--scale-1300) * 281 / 193);
+		width: var(--scale-1200);
+		height: calc(var(--scale-1200) * 281 / 193);
 		pointer-events: none;
 		z-index: 9999;
 		will-change: transform;
