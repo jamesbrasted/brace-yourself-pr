@@ -79,6 +79,6 @@ get_template_part( 'template-parts/components/background-carousel' );
 	<?php endif; ?>
 
 	<?php
-	// Load homepage intro component
+	// Load homepage intro component (main page content, including front page).
 	get_template_part( 'template-parts/components/homepage-intro' );
 	?>

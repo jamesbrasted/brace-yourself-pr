@@ -79,10 +79,10 @@ body {
 	background-color: var(--color-bg);
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	font-kerning: none;
 	text-rendering: optimizeLegibility;
-	font-feature-settings: "kern";
-	-webkit-font-feature-settings: "kern";
+	font-kerning: normal;
+	font-feature-settings: normal;
+	-webkit-font-feature-settings: normal;
 }
 
 ::selection {
@@ -1254,6 +1254,7 @@ body.home {
    HOMEPAGE INTRO COMPONENT
    ======================================== */
 
+/* Intro text: fixed at bottom of viewport across pages */
 .homepage-intro {
 	position: fixed;
 	bottom: 0;
@@ -1290,7 +1291,7 @@ body.home {
 	}
 	.homepage-intro__text {
 		/* Span the middle 7 columns (columns 3-9) of a 12-column grid */
-		grid-column: 2 / span 8;
+		grid-column: 3 / span 8;
 	}
 }
 
@@ -1508,17 +1509,16 @@ a.artist__name {
 	}
 }
 
-/* Mobile / tablet: centered inline SVG via real div (scale-1100 width, aspect 193:281) */
+/* Mobile / tablet: decorative SVG fixed near bottom-right (scale-1100 width, aspect 193:281) */
 @media (max-width: 767px) {
 	.home .homepage-cursor-mobile {
 		position: fixed;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
+		right: var(--space-800);
+		bottom: var(--space-1200);
+		transform: none;
 		width: var(--scale-1100);
 		height: calc(var(--scale-1100) * 281 / 193);
 		pointer-events: none;
-		z-index: 1000;
 	}
 	.home .homepage-cursor-mobile svg {
 		width: 100%;
