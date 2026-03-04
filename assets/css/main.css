@@ -786,7 +786,7 @@ a:focus-visible {
 .primary-menu .current_page_item > a,
 .primary-menu .current-menu-ancestor > a {
 	background-image: radial-gradient(circle at center, currentColor 0, currentColor calc(var(--scale-200) / 2), transparent calc(var(--scale-200) / 2));
-	background-position: var(--scale-400) 50%;
+	background-position: var(--scale-400) 54%;
 	background-size: var(--scale-200) var(--scale-200);
 }
 
