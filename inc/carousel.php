@@ -193,7 +193,7 @@ function brace_yourself_get_carousel_data() {
 	$settings_page_id = brace_yourself_get_carousel_settings_page_id();
 
 	if ( $settings_page_id ) {
-		for ( $i = 1; $i <= 4; $i++ ) {
+		for ( $i = 1; $i <= 9; $i++ ) {
 			$desktop_image = get_field( 'carousel_image_' . $i . '_desktop', $settings_page_id );
 			if ( $desktop_image ) {
 				$mobile_image = get_field( 'carousel_image_' . $i . '_mobile', $settings_page_id );
@@ -222,9 +222,9 @@ function brace_yourself_get_carousel_data() {
 	if ( ! is_array( $videos ) ) {
 		$videos = array();
 	}
-	// Force a fixed duration of 7 seconds for stability.
+	// Force a fixed duration of 5 seconds for stability.
 	// This prevents extremely long cycles that would slow transitions.
-	$duration = 7;
+	$duration = 5;
 
 	$cached = array(
 		'images'        => $images,

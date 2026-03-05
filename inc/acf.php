@@ -124,14 +124,14 @@ function brace_yourself_get_about_page_id() {
 function brace_yourself_get_carousel_fields() {
 	$fields = array();
 
-	// Images 1–4, each with Desktop and Mobile (Optional)
-	for ( $i = 1; $i <= 4; $i++ ) {
+	// Images 1–9, each with Desktop and Mobile (Optional)
+	for ( $i = 1; $i <= 9; $i++ ) {
 		$fields[] = array(
 			'key'               => 'field_carousel_image_' . $i . '_desktop',
 			'label'             => 'Image ' . $i . ' - Desktop',
 			'name'              => 'carousel_image_' . $i . '_desktop',
 			'type'              => 'image',
-			'instructions'      => $i === 1 ? 'Desktop image for the carousel. This will be used as fallback if videos cannot autoplay.' : 'Optional: Additional desktop image.',
+			'instructions'      => 1 === $i ? 'Desktop image for the carousel. This will be used as fallback if videos cannot autoplay.' : 'Optional: Additional desktop image.',
 			'return_format'     => 'array',
 			'preview_size'      => 'medium',
 			'library'           => 'all',

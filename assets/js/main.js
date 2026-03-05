@@ -278,8 +278,9 @@
 
 		const prefersFinePointer = window.matchMedia('(pointer: fine)');
 		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+		const isDesktopViewport = window.matchMedia('(min-width: 768px)');
 		function shouldEnable() {
-			return prefersFinePointer.matches && !prefersReducedMotion.matches;
+			return prefersFinePointer.matches && !prefersReducedMotion.matches && isDesktopViewport.matches;
 		}
 
 		let cleanupRef = null;
@@ -332,17 +333,26 @@
 					hasMoved = true;
 					cursorEl.classList.add('is-visible');
 				}
+				scheduleTick();
 			}
 			function onMouseOut(e) {
 				if (!e.relatedTarget || !document.contains(e.relatedTarget)) {
 					cursorEl.classList.add('is-outside');
 				}
 			}
-			function onMouseDown() { isClicking = true; }
-			function onMouseUp() { isClicking = false; }
+			function onMouseDown() {
+				isClicking = true;
+				scheduleTick();
+			}
+			function onMouseUp() {
+				isClicking = false;
+				scheduleTick();
+			}
 
 			function scheduleTick() {
-				if (rafId == null && !document.hidden) rafId = requestAnimationFrame(tick);
+				if (rafId != null || document.hidden) return;
+				if (cursorEl.classList.contains('is-outside')) return; /* pause when cursor hidden */
+				rafId = requestAnimationFrame(tick);
 			}
 			function tick() {
 				rafId = null;
@@ -358,7 +368,7 @@
 				cursorEl.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
 				cursorEl.classList.toggle('is-hover', isHover);
 				cursorEl.classList.toggle('is-clicking', isClicking);
-				rafId = requestAnimationFrame(tick);
+				/* Only schedule next tick when mouse moves; stops RAF when idle */
 			}
 
 			document.addEventListener('mousemove', onMouseMove, { passive: true });
@@ -386,9 +396,10 @@
 		}
 
 		setupCursor();
-		/* Keep listeners so we can re-init when user toggles back to fine pointer / no reduced motion */
+		/* Re-init when pointer, reduced motion, or viewport changes (tear down when resizing to tablet) */
 		prefersReducedMotion.addEventListener('change', setupCursor);
 		prefersFinePointer.addEventListener('change', setupCursor);
+		isDesktopViewport.addEventListener('change', setupCursor);
 	}
 
 	/**

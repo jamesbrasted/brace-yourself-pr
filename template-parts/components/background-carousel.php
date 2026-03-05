@@ -6,7 +6,7 @@
  * with CSS animations. Intensely blurred on inner pages, fully visible on homepage.
  *
  * ACF Free (Carousel Settings page):
- * - carousel_image_1–4_desktop / _mobile - Fallback images if video autoplay fails
+ * - carousel_image_1–9_desktop / _mobile - Fallback images if video autoplay fails
  * - video_1_desktop, video_1_mobile, video_2_desktop, video_2_mobile - Video files
  *
  * @package Brace_Yourself

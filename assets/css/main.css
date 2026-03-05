@@ -493,10 +493,6 @@ h6 {
 	.text-body-lg, .text-body {
 		line-height: var(--line-height-relaxed);
 	}
-
-	.text-caption {
-		letter-spacing: var(--letter-spacing-normal);
-	}
 }
 
 @media (max-width: 375px) {
@@ -1147,7 +1143,11 @@ a:focus-visible {
 	top: 0;
 	left: 0;
 	width: 100%;
-	height: 100%;
+	/* Use viewport-relative height so background always fills the visible area,
+	   even as mobile browser chrome collapses/expands */
+	height: 100vh;
+	height: 100dvh;
+	height: 100svh;
 	z-index: -1;
 	overflow: hidden;
 	pointer-events: none;
@@ -1390,6 +1390,8 @@ a.artist__name {
 .artist__subtitle {
 	position: relative;
 	z-index: 1;
+	hyphens: auto;
+	overflow-wrap: break-word;
 }
 
 /* Initial state: zero size so image never extends document or adds scroll height */
@@ -1486,14 +1488,11 @@ a.artist__name {
 	.artist__item {
 		gap: var(--space-100);
 	}
-}
 
-@media (max-width: 375px) {
-	.artist__name {
-		font-size: var(--font-heading-sm);
+	.artist__name, .about-intro__text {
+		font-size: var(--font-body-lg);
 	}
 }
-
 /* ========================================
    MOBILE DECORATIVE SVG
    ======================================== */
