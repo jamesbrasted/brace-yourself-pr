@@ -19,6 +19,7 @@
 		initBackgroundCarousel();
 		initRoster();
 		initCustomCursor();
+		initTicker();
 	}
 
 	/**
@@ -106,7 +107,18 @@
 
 		// Check a bit more frequently so playback syncs more closely
 		// with the visual fade-in, without a noticeable perf impact.
-		setInterval(checkVisibility, 250);
+		let intervalId = setInterval(checkVisibility, 250);
+
+		// No need to check visibility when the tab is hidden — pause and resume
+		// with the page to avoid burning CPU/GPU in the background.
+		document.addEventListener('visibilitychange', () => {
+			if (document.hidden) {
+				clearInterval(intervalId);
+				intervalId = null;
+			} else {
+				intervalId = setInterval(checkVisibility, 250);
+			}
+		}, { passive: true });
 	}
 
 	/**
@@ -377,6 +389,75 @@
 		/* Keep listeners so we can re-init when user toggles back to fine pointer / no reduced motion */
 		prefersReducedMotion.addEventListener('change', setupCursor);
 		prefersFinePointer.addEventListener('change', setupCursor);
+	}
+
+	/**
+	 * Mobile logo ticker — RAF-driven on touch devices.
+	 *
+	 * CSS infinite animations on iOS Safari can flash for one frame at the loop
+	 * reset point because the GPU compositor resets independently of the main
+	 * thread. Driving the ticker via requestAnimationFrame on the main thread
+	 * avoids that reset entirely: we wrap position with modulo so the fractional
+	 * pixel offset is preserved across every loop and the seam is invisible.
+	 * The loop is paused via visibilitychange to avoid burning CPU/GPU when the
+	 * page is not visible.
+	 */
+	function initTicker() {
+		// Only override CSS on real touch devices where the flash occurs
+		if (!('ontouchstart' in window)) return;
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+		const ticker = document.querySelector('.site-title__ticker');
+		if (!ticker) return;
+
+		const svgs = ticker.querySelectorAll('.site-title__svg--mobile');
+		if (svgs.length < 2) return;
+
+		// Wait one frame for layout so getBoundingClientRect is accurate
+		requestAnimationFrame(function() {
+			// Distance from the left edge of copy 1 to the left edge of copy 2
+			// (= SVG width + flex gap). Measured in real pixels — avoids any
+			// vw rounding mismatch between CSS and the compositor.
+			const step = svgs[1].getBoundingClientRect().left - svgs[0].getBoundingClientRect().left;
+			if (step <= 0) return;
+
+			const isMobile = window.matchMedia('(max-width: 767px)').matches;
+			const duration = isMobile ? 12000 : 30000; // ms — must match CSS
+			const pxPerMs = step / duration;
+
+			ticker.style.animation = 'none';
+
+			let position = 0;
+			let lastTime = null;
+			let rafId = null;
+
+			function tick(timestamp) {
+				if (lastTime !== null) {
+					position -= pxPerMs * (timestamp - lastTime);
+					// Modulo wrapping: correctly handles any size delta (e.g. dropped
+					// frames) without multiple += iterations
+					if (position < -step) {
+						position = -((-position) % step);
+					}
+					ticker.style.transform = 'translate3d(' + position + 'px, 0, 0)';
+				}
+				lastTime = timestamp;
+				rafId = requestAnimationFrame(tick);
+			}
+
+			function onVisibilityChange() {
+				if (document.hidden) {
+					cancelAnimationFrame(rafId);
+					rafId = null;
+					lastTime = null; // Prevents a delta spike when resuming
+				} else {
+					rafId = requestAnimationFrame(tick);
+				}
+			}
+
+			document.addEventListener('visibilitychange', onVisibilityChange, { passive: true });
+			rafId = requestAnimationFrame(tick);
+		});
 	}
 
 	// Initialize when DOM is ready

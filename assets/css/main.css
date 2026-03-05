@@ -500,10 +500,6 @@ h6 {
 }
 
 @media (max-width: 375px) {
-	.text-heading-xl {
-		font-size: var(--font-body-lg);
-	}
-
 	.text-heading-lg {
 		font-size: var(--font-body);
 	}
@@ -1320,24 +1316,6 @@ body.home {
 /* ========================================
    CENTERED LAYOUT (viewport-centered content)
    ======================================== */
-
-/* About/centered pages: match visible viewport height with correct mobile behavior */
-#page:has(.site-main--centered) {
-	min-height: 100vh;
-	min-height: 100dvh;
-	min-height: 100svh;
-}
-
-/* About page: body class added by page-about.php so layout still works where :has() isn't supported */
-body.about-page {
-	min-height: 100vh;
-	min-height: 100dvh;
-	min-height: 100svh;
-}
-
-body.about-page #page {
-	min-height: 100%;
-}
 
 .site-main--centered {
 	flex: 1;
