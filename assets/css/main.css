@@ -368,13 +368,11 @@ h6 {
 }
 
 @media (max-width: 767px) {
-	/* iOS Safari applies Pilat's kern table and contextual alternates more aggressively
-	   at retina DPR, causing negative kern pairs and calt rules around punctuation to
-	   visually collapse word spaces. letter-spacing already provides visual glyph spacing. */
+	/* iOS Safari applies Pilat's kern table more aggressively at retina DPR,
+	   causing negative kern pairs around punctuation to visually collapse word spaces.
+	   letter-spacing on caption/body text already provides visual spacing between glyphs. */
 	body {
 		font-kerning: none;
-		font-feature-settings: 'calt' 0;
-		-webkit-font-feature-settings: 'calt' 0;
 	}
 
 	h1 {
