@@ -61,7 +61,11 @@ if ( is_front_page() ) {
 		<?php endif; ?>
 
 		<?php if ( $has_footer_columns ) : ?>
-			<div class="site-footer__inner">
+			<?php
+			$footer_column_count = count( array_filter( $footer_columns ) );
+			$footer_cols_class  = $footer_column_count === 2 ? 'site-footer__inner--2cols' : ( $footer_column_count === 4 ? 'site-footer__inner--4cols' : '' );
+			?>
+			<div class="site-footer__inner<?php echo $footer_cols_class ? ' ' . esc_attr( $footer_cols_class ) : ''; ?>">
 				<?php foreach ( $footer_columns as $i => $column_content ) : ?>
 					<?php if ( $column_content ) : ?>
 						<div class="site-footer__column site-footer__column--<?php echo esc_attr( $i ); ?>">

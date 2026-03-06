@@ -79,7 +79,7 @@ body {
 	background-color: var(--color-bg);
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	text-rendering: optimizeLegibility;
+	text-rendering: auto;
 	font-kerning: normal;
 	font-feature-settings: normal;
 	-webkit-font-feature-settings: normal;
@@ -870,6 +870,23 @@ a:focus-visible {
 	text-align: left;
 }
 
+/* 2 columns: left and right edge alignment */
+.site-footer__inner--2cols {
+	grid-template-columns: 1fr 1fr;
+}
+
+.site-footer__inner--2cols .site-footer__column:first-child {
+	grid-column: 1;
+	justify-self: start;
+	text-align: left;
+}
+
+.site-footer__inner--2cols .site-footer__column:last-child {
+	grid-column: 2;
+	justify-self: end;
+	text-align: right;
+}
+
 .site-footer__column {
 	text-align: left;
 }
@@ -878,25 +895,29 @@ a:focus-visible {
 	margin-bottom: var(--space-200);
 }
 
-/* Footer columns: map to nav-style positions */
+/* Footer columns: map to nav-style positions (4-col layout) */
+.site-footer__inner--4cols .site-footer__column--1,
 .site-footer__column--1 {
 	grid-column: 1;
 	justify-self: start;
 	text-align: left;
 }
 
+.site-footer__inner--4cols .site-footer__column--2,
 .site-footer__column--2 {
 	grid-column: 2;
 	justify-self: center;
 	text-align: left;
 }
 
+.site-footer__inner--4cols .site-footer__column--3,
 .site-footer__column--3 {
 	grid-column: 3;
 	justify-self: center;
 	text-align: left;
 }
 
+.site-footer__inner--4cols .site-footer__column--4,
 .site-footer__column--4 {
 	grid-column: 4;
 	justify-self: end;
@@ -904,13 +925,16 @@ a:focus-visible {
 }
 
 @media (max-width: 767px) {
-	.site-footer__inner {
+	.site-footer__inner,
+	.site-footer__inner--2cols {
 		gap: var(--space-400);
 		grid-template-columns: 1fr;
 		align-items: center;
 		text-align: center;
 	}
 
+	.site-footer__inner--2cols .site-footer__column:first-child,
+	.site-footer__inner--2cols .site-footer__column:last-child,
 	.site-footer__column--1,
 	.site-footer__column--2,
 	.site-footer__column--3,
@@ -1144,10 +1168,11 @@ a:focus-visible {
 	left: 0;
 	width: 100%;
 	/* Use viewport-relative height so background always fills the visible area,
-	   even as mobile browser chrome collapses/expands */
+	   even as mobile browser chrome collapses/expands.
+	   Order matters: dvh wins on modern browsers (dynamic — grows when chrome hides). */
 	height: 100vh;
-	height: 100dvh;
 	height: 100svh;
+	height: 100dvh;
 	z-index: -1;
 	overflow: hidden;
 	pointer-events: none;
@@ -1219,14 +1244,17 @@ a:focus-visible {
 	/* Push footer to bottom of viewport when content is short */
 	display: flex;
 	flex-direction: column;
+	/* Use modern viewport units so mobile browser chrome doesn't push the footer below the fold */
 	min-height: 100vh;
+	min-height: 100svh;
+	min-height: 100dvh;
 }
 
 /* Frontpage: one visible viewport, but allow natural scroll on real devices */
 body.home {
 	min-height: 100vh;
-	min-height: 100dvh;
 	min-height: 100svh;
+	min-height: 100dvh;
 	overflow-x: hidden;
 	overflow-y: auto;
 }
@@ -1307,12 +1335,6 @@ body.home {
 	}
 }
 
-@media (max-width: 375px) {
-	.homepage-intro__text {
-		font-size: var(--text-sm);
-	}
-}
-
 /* ========================================
    CENTERED LAYOUT (viewport-centered content)
    ======================================== */
@@ -1352,12 +1374,8 @@ body.roster-page .site-main {
 	padding: var(--space-800) var(--space-600);
 }
 
-/* Isolate roster layout so preview images don't affect sticky nav containing block */
-@media (max-width: 767px) {
-	body.roster-page .site-main {
-		contain: layout;
-	}
-}
+/* contain: layout intentionally omitted on mobile — .artist__preview is display: none
+   on mobile so there is no containing-block interference with the sticky nav. */
 
 @media (min-width: 768px) {
 	body.roster-page .site-main {
@@ -1509,7 +1527,7 @@ a.artist__name {
 	.home .homepage-cursor-mobile {
 		position: fixed;
 		right: var(--space-800);
-		bottom: var(--space-1200);
+		bottom: var(--space-1300);
 		transform: none;
 		width: var(--scale-1100);
 		height: calc(var(--scale-1100) * 281 / 193);
