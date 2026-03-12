@@ -1415,7 +1415,8 @@ a.artist__name {
 .artist__subtitle {
 	position: relative;
 	z-index: 1;
-	hyphens: auto;
+	-webkit-hyphens: manual !important;
+	hyphens: manual !important;
 	overflow-wrap: break-word;
 }
 
